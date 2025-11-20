@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nijjara ERP - لوحة التحكم</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f5f7fa;
+      direction: rtl;
+      overflow-x: hidden;
+    }
+    
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 0;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    
+    .sidebar.collapsed {
+      transform: translateX(100%);
+    }
+    
+    .sidebar-header {
+      padding: 20px 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .sidebar-header p {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+    
+    .nav-menu {
+      list-style: none;
+    }
+    
+    .nav-item {
+      margin-bottom: 5px;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 14px 25px;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 15px;
+    }
+    
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      padding-right: 30px;
+    }
+    
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      border-right: 4px solid white;
+    }
+    
+    .nav-icon {
+      width: 24px;
+      margin-left: 12px;
+      font-size: 20px;
+    }
+    
+    .nav-submenu {
+      list-style: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-submenu.open {
+      max-height: 500px;
+    }
+    
+    .nav-submenu .nav-link {
+      padding-right: 55px;
+      font-size: 14px;
+    }
+    
+    /* ========== HEADER ========== */
+    .main-header {
+      position: fixed;
+      top: 0;
+      right: 280px;
+      left: 0;
+      height: 70px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 999;
+      transition: right 0.3s ease;
+    }
+    
+    .main-header.expanded {
+      right: 0;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+      display: none;
+    }
+    
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: #f5f7fa;
+      border-radius: 25px;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .btn-logout {
+      padding: 10px 20px;
+      background: #ff4757;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-logout:hover {
+      background: #ee3e4e;
+      transform: translateY(-2px);
+    }
+    
+    /* ========== MAIN CONTENT ========== */
+    .main-content {
+      margin-right: 280px;
+      margin-top: 70px;
+      padding: 30px;
+      min-height: calc(100vh - 70px);
+      transition: margin-right 0.3s ease;
+    }
+    
+    .main-content.expanded {
+      margin-right: 0;
+    }
+    
+    /* ========== DASHBOARD CARDS ========== */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .stat-icon.blue { background: #e3f2fd; color: #2196f3; }
+    .stat-icon.green { background: #e8f5e9; color: #4caf50; }
+    .stat-icon.orange { background: #fff3e0; color: #ff9800; }
+    .stat-icon.purple { background: #f3e5f5; color: #9c27b0; }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    /* ========== CONTENT SECTION ========== */
+    .content-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    .btn-primary {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* ========== TABLE ========== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .data-table thead {
+      background: #f8f9fa;
+    }
+    
+    .data-table th {
+      padding: 14px;
+      text-align: right;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .data-table td {
+      padding: 14px;
+      border-bottom: 1px solid #f0f0f0;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .data-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+    
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .main-header {
+        right: 0;
+      }
+      
+      .main-content {
+        margin-right: 0;
+      }
+      
+      .menu-toggle {
+        display: block;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* ========== LOADING ========== */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>Nijjara ERP</h1>
+      <p>نظام إدارة الموارد</p>
+    </div>
+    
+    <nav>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="#" class="nav-link active" onclick="loadPage('dashboard')">
+            <span class="nav-icon">🏠</span>
+            <span>لوحة التحكم</span>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="toggleSubmenu('hrm')">
+            <span class="nav-icon">👥</span>
+            <span>الموارد البشرية</span>
+          </a>
+          <ul class="nav-submenu" id="submenu-hrm">
+            <li><a href="#" class="nav-link" onclick="loadPage('hrm-employees')">الموظفين</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('hrm-attendance')">الحضور</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('hrm-leave')">الإجازات</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('hrm-advances')">السلف</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="toggleSubmenu('prj')">
+            <span class="nav-icon">📊</span>
+            <span>المشاريع</span>
+          </a>
+          <ul class="nav-submenu" id="submenu-prj">
+            <li><a href="#" class="nav-link" onclick="loadPage('prj-main')">المشاريع</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('prj-clients')">العملاء</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('prj-tasks')">المهام</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('prj-materials')">المواد</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="toggleSubmenu('fin')">
+            <span class="nav-icon">💰</span>
+            <span>المالية</span>
+          </a>
+          <ul class="nav-submenu" id="submenu-fin">
+            <li><a href="#" class="nav-link" onclick="loadPage('fin-expenses')">المصروفات</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('fin-revenue')">الإيرادات</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('fin-custody')">العهد</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('fin-payroll')">المرتبات</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="toggleSubmenu('sys')">
+            <span class="nav-icon">⚙️</span>
+            <span>الإدارة</span>
+          </a>
+          <ul class="nav-submenu" id="submenu-sys">
+            <li><a href="#" class="nav-link" onclick="loadPage('sys-users')">المستخدمين</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('sys-roles')">الأدوار</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('sys-audit')">سجل التدقيق</a></li>
+            <li><a href="#" class="nav-link" onclick="loadPage('sys-settings')">الإعدادات</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- MAIN HEADER -->
+  <header class="main-header" id="mainHeader">
+    <div class="header-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <h2 class="page-title" id="pageTitle">لوحة التحكم</h2>
+    </div>
+    
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">M</div>
+        <div class="user-name" id="userName">محمد خريبي</div>
+      </div>
+      <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="mainContent">
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon blue">👥</div>
+        </div>
+        <div class="stat-value" id="totalEmployees">--</div>
+        <div class="stat-label">إجمالي الموظفين</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon green">📊</div>
+        </div>
+        <div class="stat-value" id="totalProjects">--</div>
+        <div class="stat-label">المشاريع النشطة</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon orange">💰</div>
+        </div>
+        <div class="stat-value" id="monthlyRevenue">--</div>
+        <div class="stat-label">الإيرادات الشهرية</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon purple">📈</div>
+        </div>
+        <div class="stat-value" id="pendingTasks">--</div>
+        <div class="stat-label">المهام المعلقة</div>
+      </div>
+    </div>
+    
+    <div class="content-section">
+      <div class="section-header">
+        <h3 class="section-title">النشاطات الأخيرة</h3>
+        <button class="btn-primary" onclick="refreshData()">تحديث</button>
+      </div>
+      
+      <div id="contentArea">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let bootstrapData = null;
+    
+    /**
+     * Initialize dashboard
+     */
+    window.addEventListener('load', () => {
+      checkAuth();
+      loadBootstrapData();
+    });
+    
+    /**
+     * Check authentication
+     */
+    function checkAuth() {
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        google.script.run
+          .withSuccessHandler((url) => {
+            window.location.href = url;
+          })
+          .getScriptUrl();
+        return;
+      }
+      
+      // Load user info
+      const userName = sessionStorage.getItem('userName');
+      if (userName) {
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+      }
+    }
+    
+    /**
+     * Load bootstrap data
+     */
+    function loadBootstrapData() {
+      const bootstrap = sessionStorage.getItem('bootstrap');
+      if (bootstrap) {
+        bootstrapData = JSON.parse(bootstrap);
+        initializeDashboard();
+      }
+    }
+    
+    /**
+     * Initialize dashboard with data
+     */
+    function initializeDashboard() {
+      loadDashboardStats();
+      loadRecentActivities();
+    }
+    
+    /**
+     * Load dashboard statistics
+     */
+    function loadDashboardStats() {
+      // Load employee count
+      google.script.run
+        .withSuccessHandler((data) => {
+          if (data.success) {
+            document.getElementById('totalEmployees').textContent = data.data.length;
+          }
+        })
+        .getData('HRM_Employees');
+      
+      // Load project count
+      google.script.run
+        .withSuccessHandler((data) => {
+          if (data.success) {
+            const activeProjects = data.data.filter(p => p.PRJ_Status === 'DD_PRJ_IN_PROGRESS');
+            document.getElementById('totalProjects').textContent = activeProjects.length;
+          }
+        })
+        .getData('PRJ_Main');
+    }
+    
+    /**
+     * Load recent activities
+     */
+    function loadRecentActivities() {
+      const contentArea = document.getElementById('contentArea');
+      contentArea.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">لا توجد نشاطات حديثة</p>';
+    }
+    
+    /**
+     * Toggle sidebar on mobile
+     */
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+    
+    /**
+     * Toggle submenu
+     */
+    function toggleSubmenu(menuId) {
+      const submenu = document.getElementById(`submenu-${menuId}`);
+      submenu.classList.toggle('open');
+    }
+    
+    /**
+     * Load different pages
+     */
+    function loadPage(pageName) {
+      document.getElementById('pageTitle').textContent = 'جاري التحميل...';
+      // TODO: Implement page routing
+      console.log('Loading page:', pageName);
+    }
+    
+    /**
+     * Refresh data
+     */
+    function refreshData() {
+      loadDashboardStats();
+      loadRecentActivities();
+    }
+    
+    /**
+     * Logout function
+     */
+    function logout() {
+      const token = sessionStorage.getItem('authToken');
+      
+      google.script.run
+        .withSuccessHandler(() => {
+          sessionStorage.clear();
+          google.script.run
+            .withSuccessHandler((url) => {
+              window.location.href = url;
+            })
+            .getScriptUrl();
+        })
+        .withFailureHandler(() => {
+          sessionStorage.clear();
+          google.script.run
+            .withSuccessHandler((url) => {
+              window.location.href = url;
+            })
+            .getScriptUrl();
+        })
+        .logoutUser(token);
+    }
+  </script>
+
+</body>
+</html>
+
