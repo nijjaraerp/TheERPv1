@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AETERNA / CORE // 3024</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --neon-cyan: #00f3ff;
+        --neon-magenta: #bc13fe;
+        --void-dark: #050510;
+        --glass-bg: rgba(10, 10, 25, 0.4);
+        --glass-border: rgba(255, 255, 255, 0.1);
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--void-dark);
+        font-family: "Rajdhani", sans-serif;
+        color: white;
+      }
+
+      /* --- Quantum Field Canvas --- */
+      #quantum-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: all;
+      }
+
+      /* --- Holographic UI Container --- */
+      #holo-container {
+        perspective: 1000px;
+        z-index: 10;
+        position: relative;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .holo-card {
+        width: 450px;
+        padding: 3rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+          inset 0 0 30px rgba(0, 243, 255, 0.05);
+        transform-style: preserve-3d;
+        transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+        transition: transform 0.1s cubic-bezier(0.2, 0.4, 0.6, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Scanline overlay on the card */
+      .holo-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          transparent 50%,
+          rgba(0, 243, 255, 0.03) 50%
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Glowing borders */
+      .holo-card::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          var(--neon-cyan),
+          transparent,
+          var(--neon-magenta),
+          transparent
+        );
+        z-index: -1;
+        border-radius: 20px;
+        animation: rotateBorder 4s linear infinite;
+        opacity: 0.3;
+      }
+
+      @keyframes rotateBorder {
+        0% {
+          filter: hue-rotate(0deg);
+        }
+        100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+
+      /* Typography */
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 0.2em;
+        text-shadow: 0 0 20px var(--neon-cyan);
+      }
+
+      .input-group {
+        position: relative;
+        margin-bottom: 2.5rem;
+        transform: translateZ(20px);
+      }
+
+      input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 1.2rem;
+        padding: 10px 0;
+        font-family: "Orbitron", sans-serif;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      input:focus {
+        border-bottom-color: var(--neon-cyan);
+        box-shadow: 0 10px 20px -10px var(--neon-cyan);
+      }
+
+      label {
+        position: absolute;
+        top: 10px;
+        left: 0;
+        color: rgba(255, 255, 255, 0.5);
+        pointer-events: none;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        letter-spacing: 1px;
+      }
+
+      input:focus ~ label,
+      input:valid ~ label {
+        top: -20px;
+        font-size: 0.8rem;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px var(--neon-cyan);
+      }
+
+      /* Biometric Spinner */
+      .bio-ring {
+        position: absolute;
+        right: 0;
+        top: 5px;
+        width: 20px;
+        height: 20px;
+        border: 2px solid transparent;
+        border-top-color: var(--neon-cyan);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.3s;
+        animation: spin 1s linear infinite;
+      }
+
+      input:focus ~ .bio-ring {
+        opacity: 1;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Login Button */
+      .btn-neural {
+        background: transparent;
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 15px 40px;
+        font-family: "Orbitron", sans-serif;
+        font-weight: bold;
+        letter-spacing: 3px;
+        width: 100%;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        transform: translateZ(30px);
+        text-transform: uppercase;
+      }
+
+      .btn-neural:hover {
+        background: var(--neon-cyan);
+        color: #000;
+        box-shadow: 0 0 30px var(--neon-cyan);
+      }
+
+      .btn-neural::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.8) 0%,
+          transparent 70%
+        );
+        transform: scale(0);
+        transition: transform 0.6s ease-out;
+        opacity: 0.3;
+      }
+
+      .btn-neural:active::after {
+        transform: scale(1);
+      }
+
+      /* Success Message Overlay */
+      #success-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 2s ease;
+        mix-blend-mode: overlay;
+      }
+
+      .scan-line {
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        background: var(--neon-magenta);
+        opacity: 0.5;
+        animation: scan 3s linear infinite;
+        top: -10%;
+      }
+
+      @keyframes scan {
+        0% {
+          top: -10%;
+        }
+        100% {
+          top: 110%;
+        }
+      }
+
+      .error-message {
+        background: rgba(220, 38, 38, 0.2);
+        border: 1px solid rgba(220, 38, 38, 0.5);
+        color: #ff6b6b;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        display: none;
+        font-family: "Rajdhani", sans-serif;
+      }
+
+      .error-message.show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background Physics Layer -->
+    <canvas id="quantum-canvas"></canvas>
+
+    <!-- Main Interactive Layer -->
+    <div id="holo-container">
+      <div class="holo-card" id="login-card">
+        <!-- Decorative Hologram UI Elements -->
+        <div
+          class="absolute top-4 left-4 w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_#00f3ff]"
+        ></div>
+        <div
+          class="absolute top-4 right-4 text-[10px] text-cyan-400 font-mono tracking-widest opacity-70"
+        >
+          SYS.V.99.4
+        </div>
+        <div
+          class="absolute bottom-4 left-4 text-[10px] text-fuchsia-500 font-mono tracking-widest opacity-70"
+        >
+          SECURE::LINK
+        </div>
+        <div
+          class="absolute bottom-4 right-4 w-16 h-1 bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-50"
+        ></div>
+
+        <!-- Content -->
+        <div class="text-center mb-10 transform translate-z-10">
+          <h1 class="text-4xl font-black text-white mb-2">AETERNA</h1>
+          <p class="text-xs text-cyan-300 tracking-[0.5em] uppercase">
+            Neural Enterprise Core
+          </p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form id="login-form" onsubmit="handleLogin(event); return false;">
+          <div class="input-group">
+            <input type="text" id="identity" name="username" required autocomplete="off" />
+            <label for="identity">NEURAL ID</label>
+            <div class="bio-ring"></div>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="synapse" name="password" required />
+            <label for="synapse">SYNAPTIC KEY</label>
+            <div
+              class="bio-ring"
+              style="border-top-color: var(--neon-magenta)"
+            ></div>
+          </div>
+
+          <button type="submit" class="btn-neural" id="loginBtn">
+            INITIATE LINK
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Flash Effect Overlay -->
+    <div id="success-overlay">
+      <h1 class="text-6xl text-black font-black tracking-widest">
+        LINK ESTABLISHED
+      </h1>
+    </div>
+
+    <script>
+      // --- CONFIGURATION ---
+      const LOGGING = true;
+      const PARTICLE_COUNT = 150;
+      const CONNECTION_DISTANCE = 100;
+      const MOUSE_RADIUS = 200;
+      const CONFIG = {
+        SCRIPT_URL: 'YOUR_SCRIPT_URL_HERE'
+      };
+
+      // --- LOGGER ---
+      function log(action, details) {
+        if (LOGGING) {
+          const timestamp = new Date().toISOString();
+          console.log(`[${timestamp}] [${action}]:`, details);
+        }
+      }
+
+      // --- CANVAS SETUP ---
+      const canvas = document.getElementById("quantum-canvas");
+      const ctx = canvas.getContext("2d");
+      let width, height;
+      let particles = [];
+      let warpSpeed = false;
+
+      // Resize Handler
+      function resize() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        log("SYSTEM", `Canvas resized to ${width}x${height}`);
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      // --- MOUSE TRACKING ---
+      let mouse = { x: null, y: null };
+      window.addEventListener("mousemove", (e) => {
+        mouse.x = e.x;
+        mouse.y = e.y;
+        handleCardTilt(e);
+      });
+
+      // --- 3D TILT LOGIC (Parallax) ---
+      const card = document.getElementById("login-card");
+      function handleCardTilt(e) {
+        const x = e.clientX;
+        const y = e.clientY;
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        card.style.setProperty("--rotateX", rotateX + "deg");
+        card.style.setProperty("--rotateY", rotateY + "deg");
+      }
+
+      // --- PARTICLE SYSTEM ---
+      class Particle {
+        constructor() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.z = Math.random() * 2 + 0.5;
+          this.vx = (Math.random() - 0.5) * 0.5;
+          this.vy = (Math.random() - 0.5) * 0.5;
+          this.size = Math.random() * 2 + 1;
+          this.color =
+            Math.random() > 0.5 ? "rgba(0, 243, 255," : "rgba(188, 19, 254,";
+        }
+
+        update() {
+          if (!warpSpeed) {
+            this.x += this.vx * this.z;
+            this.y += this.vy * this.z;
+
+            if (mouse.x != null) {
+              let dx = mouse.x - this.x;
+              let dy = mouse.y - this.y;
+              let distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance < MOUSE_RADIUS) {
+                const forceDirectionX = dx / distance;
+                const forceDirectionY = dy / distance;
+                const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
+                const directionMultiplier = -1;
+
+                this.x += forceDirectionX * force * 2 * directionMultiplier;
+                this.y += forceDirectionY * force * 2 * directionMultiplier;
+              }
+            }
+          } else {
+            const cx = width / 2;
+            const cy = height / 2;
+            let dx = this.x - cx;
+            let dy = this.y - cy;
+
+            if (dx === 0) dx = Math.random() - 0.5;
+            if (dy === 0) dy = Math.random() - 0.5;
+
+            this.x += dx * 0.1;
+            this.y += dy * 0.1;
+            this.size += 0.1;
+          }
+
+          if (this.x > width) this.x = 0;
+          if (this.x < 0) this.x = width;
+          if (this.y > height) this.y = 0;
+          if (this.y < 0) this.y = height;
+        }
+
+        draw() {
+          ctx.beginPath();
+          let alpha = (this.z / 2.5) * 0.8;
+          if (warpSpeed) alpha = 1;
+
+          ctx.fillStyle = this.color + alpha + ")";
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push(new Particle());
+        }
+        log("SYSTEM", "Particles Initialized");
+      }
+
+      function drawLines() {
+        if (warpSpeed) return;
+
+        let opacityValue = 1;
+        for (let a = 0; a < particles.length; a++) {
+          for (let b = a; b < particles.length; b++) {
+            let distance =
+              (particles[a].x - particles[b].x) *
+                (particles[a].x - particles[b].x) +
+              (particles[a].y - particles[b].y) *
+                (particles[a].y - particles[b].y);
+
+            if (distance < CONNECTION_DISTANCE * CONNECTION_DISTANCE) {
+              opacityValue = 1 - distance / 20000;
+              ctx.strokeStyle = "rgba(0, 243, 255," + opacityValue * 0.2 + ")";
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(particles[a].x, particles[a].y);
+              ctx.lineTo(particles[b].x, particles[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animate() {
+        ctx.fillStyle = warpSpeed
+          ? "rgba(5, 5, 16, 0.2)"
+          : "rgba(5, 5, 16, 0.5)";
+        ctx.fillRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].update();
+          particles[i].draw();
+        }
+        drawLines();
+        requestAnimationFrame(animate);
+      }
+
+      // --- USER INTERACTION ---
+      const inputs = document.querySelectorAll("input");
+      inputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const ring = e.target.parentElement.querySelector(".bio-ring");
+          if (ring) {
+            ring.style.borderWidth = Math.floor(Math.random() * 4 + 1) + "px";
+            if (e.target.value.length % 3 === 0)
+              log("HAPTIC", "Simulated micro-vibration");
+          }
+        });
+      });
+
+      // --- LOGIN HANDLING ---
+      async function handleLogin(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("identity").value.trim();
+        const password = document.getElementById("synapse").value;
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (!username || !password) {
+          showError("NEURAL INTERFACE ERROR: INPUT STREAMS EMPTY");
+          return;
+        }
+
+        clearError();
+
+        const btn = document.getElementById("loginBtn");
+        btn.innerText = "SYNCHRONIZING...";
+        btn.style.pointerEvents = "none";
+
+        try {
+          const response = await callBackend('login', {
+            username: username,
+            password: password
+          });
+
+          if (response.success) {
+            sessionStorage.setItem('auth_token', response.token);
+            sessionStorage.setItem('session_id', response.sessionId);
+            sessionStorage.setItem('bootstrap', JSON.stringify(response.bootstrap));
+            localStorage.setItem('erp_session_token', response.token);
+            localStorage.setItem('erp_user', JSON.stringify(response.user || {}));
+            localStorage.setItem('erp_bootstrap', JSON.stringify(response.bootstrap || {}));
+
+            warpSpeed = true;
+            card.style.transition = "all 1s ease-in";
+            card.style.transform = "scale(0) rotateX(720deg)";
+            card.style.opacity = "0";
+
+            setTimeout(() => {
+              const overlay = document.getElementById("success-overlay");
+              overlay.style.opacity = "1";
+              log("SYSTEM", "Access Granted. Transitioning environment.");
+            }, 1500);
+
+            setTimeout(() => {
+              window.location.href = 'Dashboard.html';
+            }, 4000);
+          } else {
+            showError(response.message || 'NEURAL INTERFACE ERROR: AUTHENTICATION FAILED');
+            btn.innerText = "INITIATE LINK";
+            btn.style.pointerEvents = "auto";
+          }
+        } catch (error) {
+          console.error('Login Error:', error);
+          showError('NEURAL INTERFACE ERROR: CONNECTION FAILED');
+          btn.innerText = "INITIATE LINK";
+          btn.style.pointerEvents = "auto";
+        }
+      }
+
+      async function callBackend(action, params) {
+        const payload = {
+          action: action,
+          params: params
+        };
+
+        try {
+          const response = await fetch(CONFIG.SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          console.error('Backend call failed:', error);
+          throw error;
+        }
+      }
+
+      function showError(message) {
+        const errorDiv = document.getElementById("errorMessage");
+        errorDiv.textContent = message;
+        errorDiv.classList.add("show");
+      }
+
+      function clearError() {
+        document.getElementById("errorMessage").classList.remove("show");
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+        if (sessionStorage.getItem('auth_token')) {
+          window.location.href = 'Dashboard.html';
+        }
+        document.getElementById("identity").focus();
+      });
+
+      // --- STARTUP ---
+      initParticles();
+      animate();
+      log("SYSTEM", "AETERNA CORE UI LOADED");
+    </script>
+  </body>
+</html>
