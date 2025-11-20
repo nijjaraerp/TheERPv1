@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نيجارا ERP - لوحة التحكم</title>
+
+    <!-- Cairo Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 81px;
+            right: -300px;
+            width: 300px;
+            height: calc(100vh - 81px);
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 81px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 81px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .nav-menu {
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #4f46e5;
+        }
+
+        .nav-link.active {
+            background: #eef2ff;
+            color: #4f46e5;
+            border-right-color: #4f46e5;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-submenu {
+            background: #f9fafb;
+            margin-right: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .nav-submenu .nav-link {
+            padding: 10px 20px 10px 40px;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 81px;
+            padding: 30px;
+            min-height: calc(100vh - 81px);
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .metric-icon.users { background: #dbeafe; color: #1d4ed8; }
+        .metric-icon.projects { background: #dcfce7; color: #16a34a; }
+        .metric-icon.finance { background: #fef3c7; color: #d97706; }
+        .metric-icon.system { background: #f3e8ff; color: #7c3aed; }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .metric-change {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .metric-change.positive { background: #dcfce7; color: #16a34a; }
+        .metric-change.negative { background: #fef2f2; color: #dc2626; }
+
+        /* Content Area */
+        .content-area {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .content-header-bar {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .action-btn.primary {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .action-btn.primary:hover {
+            background: #4338ca;
+            border-color: #4338ca;
+        }
+
+        .content-body {
+            padding: 24px;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            border-top-color: #4f46e5;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 81px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 81px);
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .sidebar {
+                width: 280px;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .content-header-bar {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .content-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-title">نيجارا ERP</div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span id="userName">المستخدم</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                خروج
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">القائمة الرئيسية</div>
+        </div>
+        <ul class="nav-menu" id="navMenu">
+            <!-- Navigation items will be populated dynamically -->
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Content -->
+        <div id="dashboardContent">
+            <div class="content-header">
+                <h1 class="page-title">لوحة التحكم</h1>
+                <p class="page-subtitle">نظرة عامة على النظام والمؤشرات الرئيسية</p>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="dashboard-grid" id="metricsGrid">
+                <!-- Metrics will be populated dynamically -->
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="content-area">
+                <div class="content-header-bar">
+                    <div class="content-title">النشاط الأخير</div>
+                </div>
+                <div class="content-body">
+                    <div id="recentActivity">
+                        <!-- Recent activity will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Content Area -->
+        <div id="dynamicContent" style="display: none;">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </main>
+
+    <script>
+        // Configuration
+        const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Replace with actual script URL
+
+        // Global variables
+        let currentUser = null;
+        let bootstrapData = null;
+        let currentView = null;
+
+        // DOM Elements
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const navMenu = document.getElementById('navMenu');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const dashboardContent = document.getElementById('dashboardContent');
+        const dynamicContent = document.getElementById('dynamicContent');
+        const metricsGrid = document.getElementById('metricsGrid');
+        const recentActivity = document.getElementById('recentActivity');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+        });
+
+        /**
+         * Initialize the application
+         */
+        async function initializeApp() {
+            try {
+                // Check authentication
+                const sessionToken = localStorage.getItem('erp_session_token');
+                if (!sessionToken) {
+                    window.location.href = 'Login.html';
+                    return;
+                }
+
+                // Load user data from localStorage
+                currentUser = JSON.parse(localStorage.getItem('erp_user') || '{}');
+                bootstrapData = JSON.parse(localStorage.getItem('erp_bootstrap') || '{}');
+
+                // Update UI with user info
+                updateUserInfo();
+
+                // Build navigation menu
+                buildNavigationMenu();
+
+                // Load dashboard data
+                await loadDashboardData();
+
+                // Validate session
+                await validateSession(sessionToken);
+
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('حدث خطأ في تحميل النظام');
+                window.location.href = 'Login.html';
+            }
+        }
+
+        /**
+         * Set up event listeners
+         */
+        function setupEventListeners() {
+            // Menu toggle
+            menuToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', closeSidebar);
+
+            // Logout
+            logoutBtn.addEventListener('click', handleLogout);
+
+            // Close sidebar on mobile when clicking nav links
+            navMenu.addEventListener('click', function(e) {
+                if (e.target.classList.contains('nav-link')) {
+                    closeSidebar();
+                }
+            });
+        }
+
+        /**
+         * Update user information in header
+         */
+        function updateUserInfo() {
+            const userNameElement = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+
+            if (currentUser && currentUser.name) {
+                userNameElement.textContent = currentUser.name;
+                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
+        }
+
+        /**
+         * Build navigation menu from bootstrap data
+         */
+        function buildNavigationMenu() {
+            if (!bootstrapData || !bootstrapData.navigation) return;
+
+            const menuHtml = bootstrapData.navigation.map(module => {
+                let html = `
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-module="${module.id}">
+                            <i class="fas fa-${getModuleIcon(module.id)}"></i>
+                            ${module.label}
+                        </a>
+                `;
+
+                if (module.children && module.children.length > 0) {
+                    html += '<ul class="nav-submenu">';
+                    module.children.forEach(child => {
+                        html += `
+                            <li>
+                                <a href="#" class="nav-link" data-view="${child.view}" data-module="${module.id}">
+                                    ${child.label}
+                                </a>
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                }
+
+                html += '</li>';
+                return html;
+            }).join('');
+
+            navMenu.innerHTML = menuHtml;
+
+            // Add event listeners to nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', handleNavigation);
+            });
+        }
+
+        /**
+         * Get icon class for module
+         */
+        function getModuleIcon(moduleId) {
+            const icons = {
+                'dashboard': 'tachometer-alt',
+                'hr': 'users',
+                'projects': 'folder',
+                'finance': 'dollar-sign',
+                'system': 'cogs'
+            };
+            return icons[moduleId] || 'circle';
+        }
+
+        /**
+         * Handle navigation clicks
+         */
+        function handleNavigation(e) {
+            e.preventDefault();
+
+            const link = e.currentTarget;
+            const viewId = link.getAttribute('data-view');
+            const moduleId = link.getAttribute('data-module');
+
+            // Remove active class from all links
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+            // Add active class to clicked link
+            link.classList.add('active');
+
+            if (viewId) {
+                // Load specific view
+                loadView(viewId, moduleId);
+            } else if (moduleId === 'dashboard') {
+                // Show dashboard
+                showDashboard();
+            }
+        }
+
+        /**
+         * Load dashboard data
+         */
+        async function loadDashboardData() {
+            try {
+                setLoading(true);
+
+                const response = await apiCall('get_dashboard_data', {
+                    session_token: localStorage.getItem('erp_session_token'),
+                    module: 'overview'
+                });
+
+                if (response.success) {
+                    renderDashboardMetrics(response.data);
+                    renderRecentActivity(response.data);
+                }
+
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Render dashboard metrics
+         */
+        function renderDashboardMetrics(data) {
+            if (!data.metrics) return;
+
+            const metricsHtml = data.metrics.map(metric => {
+                const changeClass = metric.change.includes('+') ? 'positive' : 'negative';
+                const iconClass = getMetricIcon(metric.label);
+
+                return `
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon ${iconClass}">
+                                <i class="fas fa-${getMetricIconName(metric.label)}"></i>
+                            </div>
+                            <span class="metric-change ${changeClass}">${metric.change}</span>
+                        </div>
+                        <div class="metric-value">${metric.value}</div>
+                        <div class="metric-label">${metric.label}</div>
+                    </div>
+                `;
+            }).join('');
+
+            metricsGrid.innerHTML = metricsHtml;
+        }
+
+        /**
+         * Get metric icon class
+         */
+        function getMetricIcon(label) {
+            if (label.includes('موظف')) return 'users';
+            if (label.includes('مشروع')) return 'projects';
+            if (label.includes('إيراد')) return 'finance';
+            return 'system';
+        }
+
+        /**
+         * Get metric icon name
+         */
+        function getMetricIconName(label) {
+            if (label.includes('موظف')) return 'users';
+            if (label.includes('مشروع')) return 'folder-open';
+            if (label.includes('إيراد')) return 'dollar-sign';
+            return 'chart-line';
+        }
+
+        /**
+         * Render recent activity
+         */
+        function renderRecentActivity(data) {
+            if (!data.recent_activity) return;
+
+            const activityHtml = data.recent_activity.map(activity => `
+                <div style="padding: 12px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: #111827;">${activity.action}</div>
+                        <div style="font-size: 14px; color: #6b7280;">${activity.user}</div>
+                    </div>
+                    <div style="font-size: 12px; color: #9ca3af;">${activity.time}</div>
+                </div>
+            `).join('');
+
+            recentActivity.innerHTML = activityHtml || '<div class="empty-state"><i class="fas fa-inbox"></i><h3>لا يوجد نشاط حديث</h3></div>';
+        }
+
+        /**
+         * Load a specific view
+         */
+        async function loadView(viewId, moduleId) {
+            try {
+                setLoading(true);
+
+                const response = await apiCall('get_view', {
+                    session_token: localStorage.getItem('erp_session_token'),
+                    view_id: viewId
+                });
+
+                if (response.success) {
+                    currentView = viewId;
+                    renderView(viewId, response.data, moduleId);
+                }
+
+            } catch (error) {
+                console.error('View load error:', error);
+                showError('خطأ في تحميل البيانات');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        /**
+         * Render view content
+         */
+        function renderView(viewId, data, moduleId) {
+            // Hide dashboard, show dynamic content
+            dashboardContent.style.display = 'none';
+            dynamicContent.style.display = 'block';
+
+            // Get view configuration
+            const viewConfig = bootstrapData.views.find(v => v.VIEW_ID === viewId);
+            if (!viewConfig) return;
+
+            // Build content HTML
+            let contentHtml = `
+                <div class="content-header">
+                    <h1 class="page-title">${viewConfig.View_Title}</h1>
+                    <p class="page-subtitle">إدارة ${viewConfig.View_Title.toLowerCase()}</p>
+                </div>
+                <div class="content-area">
+                    <div class="content-header-bar">
+                        <div class="content-title">${viewConfig.View_Title}</div>
+                        <div class="content-actions">
+                            <button class="action-btn primary" onclick="handleAddNew('${viewId}')">
+                                <i class="fas fa-plus"></i>
+                                إضافة جديد
+                            </button>
+                            <button class="action-btn" onclick="refreshView()">
+                                <i class="fas fa-sync-alt"></i>
+                                تحديث
+                            </button>
+                        </div>
+                    </div>
+                    <div class="content-body">
+            `;
+
+            if (data.records && data.records.length > 0) {
+                // Build table
+                const columns = viewConfig.Source_Columns.split(',');
+                contentHtml += '<table class="data-table"><thead><tr>';
+
+                columns.forEach(col => {
+                    contentHtml += `<th>${getColumnLabel(col.trim())}</th>`;
+                });
+
+                contentHtml += '<th>الإجراءات</th></tr></thead><tbody>';
+
+                data.records.forEach(record => {
+                    contentHtml += '<tr>';
+                    columns.forEach(col => {
+                        const value = record[col.trim()] || '';
+                        contentHtml += `<td>${value}</td>`;
+                    });
+                    contentHtml += `
+                        <td>
+                            <button class="action-btn" onclick="handleEdit('${record.EMP_ID || record.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="handleView('${record.EMP_ID || record.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+
+                contentHtml += '</tbody></table>';
+            } else {
+                contentHtml += '<div class="empty-state"><i class="fas fa-database"></i><h3>لا توجد بيانات</h3><p>ابدأ بإضافة سجل جديد</p></div>';
+            }
+
+            contentHtml += '</div></div>';
+
+            dynamicContent.innerHTML = contentHtml;
+        }
+
+        /**
+         * Get column label (simplified - would use ENG_Forms for proper labels)
+         */
+        function getColumnLabel(columnName) {
+            const labels = {
+                'EMP_ID': 'كود الموظف',
+                'EMP_Name_AR': 'اسم الموظف',
+                'Job_Title': 'المسمى الوظيفي',
+                'DEPT_Name': 'القسم',
+                'EMP_Status': 'الحالة'
+            };
+            return labels[columnName] || columnName;
+        }
+
+        /**
+         * Show dashboard
+         */
+        function showDashboard() {
+            dashboardContent.style.display = 'block';
+            dynamicContent.style.display = 'none';
+            currentView = null;
+        }
+
+        /**
+         * Handle logout
+         */
+        async function handleLogout() {
+            try {
+                const sessionToken = localStorage.getItem('erp_session_token');
+
+                await apiCall('logout', {
+                    session_token: sessionToken
+                });
+
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                // Clear local storage
+                localStorage.removeItem('erp_session_token');
+                localStorage.removeItem('erp_user');
+                localStorage.removeItem('erp_bootstrap');
+
+                // Redirect to login
+                window.location.href = 'Login.html';
+            }
+        }
+
+        /**
+         * Validate session
+         */
+        async function validateSession(token) {
+            try {
+                const response = await apiCall('validate_session', {
+                    session_token: token
+                });
+
+                if (!response.success) {
+                    handleLogout();
+                }
+            } catch (error) {
+                console.error('Session validation error:', error);
+                handleLogout();
+            }
+        }
+
+        /**
+         * API call helper
+         */
+        async function apiCall(action, data) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: action,
+                    data: data
+                })
+            });
+
+            return await response.json();
+        }
+
+        /**
+         * Toggle sidebar
+         */
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        }
+
+        /**
+         * Close sidebar
+         */
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        }
+
+        /**
+         * Set loading state
+         */
+        function setLoading(loading) {
+            loadingOverlay.style.display = loading ? 'flex' : 'none';
+        }
+
+        /**
+         * Show error message
+         */
+        function showError(message) {
+            // Simple alert for now - could be improved with toast notifications
+            alert(message);
+        }
+
+        // Global functions for button handlers
+        window.handleAddNew = function(viewId) {
+            alert('سيتم فتح نموذج إضافة جديد');
+        };
+
+        window.handleEdit = function(id) {
+            alert(`سيتم تعديل السجل: ${id}`);
+        };
+
+        window.handleView = function(id) {
+            alert(`سيتم عرض السجل: ${id}`);
+        };
+
+        window.refreshView = function() {
+            if (currentView) {
+                loadView(currentView, null);
+            }
+        };
+    </script>
+</body>
+</html>
