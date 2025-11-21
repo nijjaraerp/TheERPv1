@@ -148,15 +148,6 @@ function setupAutoIncrementIDs() {
         const targetRow = 3;
         const targetCol = idColumnIndex + 1;
 
-        // Check if formula already exists
-        if (hasFormula(sheet, targetRow, targetCol)) {
-          Logger.log(
-            `Auto-increment formula already exists for ${sheetName} column ${headers[idColumnIndex]}, skipping`
-          );
-          skipCount++;
-          return;
-        }
-
         // Check if there's existing data in rows below row 3
         const lastRow = sheet.getLastRow();
         const hasExistingData = lastRow > 3;
@@ -165,41 +156,73 @@ function setupAutoIncrementIDs() {
         const row3Cell = sheet.getRange(targetRow, targetCol);
         const row3Value = row3Cell.getValue();
         const row3Formula = row3Cell.getFormula();
+        
+        // Check for various error conditions
         const row3HasError = row3Value === "#REF!" || 
                             (typeof row3Value === "string" && row3Value.includes("Error")) ||
-                            (row3Formula && row3Formula.includes("ARRAYFORMULA") && hasExistingData);
+                            (typeof row3Value === "string" && row3Value.includes("expanded")) ||
+                            (typeof row3Value === "string" && row3Value.includes("not automatically"));
+        
+        // Check if existing formula is problematic (ARRAYFORMULA with existing data)
+        const hasProblematicFormula = row3Formula && 
+                                     row3Formula.includes("ARRAYFORMULA") && 
+                                     hasExistingData &&
+                                     (row3HasError || row3Value === null || row3Value === "");
+        
+        // If formula exists but is not an error and not problematic, skip
+        if (hasFormula(sheet, targetRow, targetCol) && !row3HasError && !hasProblematicFormula) {
+          Logger.log(
+            `Auto-increment formula already exists for ${sheetName} column ${headers[idColumnIndex]}, skipping`
+          );
+          skipCount++;
+          return;
+        }
+        
+        // If there's an error or problematic formula, clear it
+        let finalRow3Value = row3Value;
+        if (row3HasError || hasProblematicFormula) {
+          Logger.log(
+            `Detected error or problematic formula in ${sheetName} row ${targetRow}, clearing before fixing`
+          );
+          row3Cell.clearContent();
+          addDelay(100);
+          // Re-check value after clearing
+          finalRow3Value = row3Cell.getValue();
+        }
 
         const colLetter = toColumnLetter(idColumnIndex);
         
-        // If row 3 has an error formula and there's existing data, clear it first
-        if (row3HasError && row3Formula) {
-          Logger.log(
-            `Clearing error formula in ${sheetName} row ${targetRow} before setting new formula`
-          );
-          row3Cell.clearContent();
-          addDelay(50);
-        }
+        // Determine if row 3 is empty (after potential clearing)
+        const row3IsEmpty = finalRow3Value === null || 
+                           finalRow3Value === "" || 
+                           finalRow3Value === "#REF!" ||
+                           (typeof finalRow3Value === "string" && (finalRow3Value.includes("Error") || finalRow3Value.includes("expanded") || finalRow3Value.includes("not automatically")));
         
-        // If there's existing data in rows 4+, we can't use ARRAYFORMULA that expands
-        // Check if row 3 is empty - if so, we'll set it to 1 (the first ID)
-        // If row 3 already has a value, we'll leave it alone
-        const row3IsEmpty = !row3HasData && (row3Value === null || row3Value === "" || row3Value === "#REF!");
+        // Check if row 3 has a valid numeric ID value (not empty, not error)
+        const row3HasValidId = !row3IsEmpty && 
+                               finalRow3Value !== null && 
+                               finalRow3Value !== "" && 
+                               !isNaN(finalRow3Value) &&
+                               typeof finalRow3Value !== "string";
         
         let formula;
         if (hasExistingData) {
           // There's existing data below, so ARRAYFORMULA can't expand
-          // If row 3 is empty, set it to 1 (first ID value)
-          // Otherwise, leave it as is
-          if (row3IsEmpty) {
+          // If row 3 is empty or has an error, set it to 1 (first ID value)
+          // If row 3 already has a valid ID, leave it alone
+          if (row3IsEmpty || row3HasError || hasProblematicFormula) {
             // Set to simple formula that just calculates row 3's ID (which is 1)
             formula = `=ROW()-2`;
-          } else {
-            // Row 3 already has a value, skip setting formula
+          } else if (row3HasValidId) {
+            // Row 3 already has a valid ID value, skip setting formula
             Logger.log(
-              `Row 3 already has ID value in ${sheetName}, skipping auto-increment setup`
+              `Row 3 already has valid ID value (${finalRow3Value}) in ${sheetName}, skipping auto-increment setup`
             );
             skipCount++;
             return;
+          } else {
+            // Unknown state, set formula anyway
+            formula = `=ROW()-2`;
           }
         } else {
           // No existing data, use ARRAYFORMULA that can expand freely
