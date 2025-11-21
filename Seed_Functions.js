@@ -157,29 +157,89 @@ function setupAutoIncrementIDs() {
           return;
         }
 
-        // Check if there's existing data that shouldn't be overwritten
-        // Only proceed if row 3 is empty or has no meaningful data
-        const existingValue = sheet.getRange(targetRow, targetCol).getValue();
-        if (
-          existingValue !== null &&
-          existingValue !== "" &&
-          !isNaN(existingValue)
-        ) {
-          Logger.log(
-            `Data exists in ${sheetName} row ${targetRow}, column ${headers[idColumnIndex]}, skipping to preserve data`
-          );
-          skipCount++;
-          return;
-        }
+        // Check if there's existing data in rows below row 3
+        const lastRow = sheet.getLastRow();
+        const hasExistingData = lastRow > 3;
+        
+        // Check if row 3 itself has data or an error
+        const row3Cell = sheet.getRange(targetRow, targetCol);
+        const row3Value = row3Cell.getValue();
+        const row3Formula = row3Cell.getFormula();
+        const row3HasError = row3Value === "#REF!" || 
+                            (typeof row3Value === "string" && row3Value.includes("Error")) ||
+                            (row3Formula && row3Formula.includes("ARRAYFORMULA") && hasExistingData);
 
         const colLetter = toColumnLetter(idColumnIndex);
-        const formula = `=ARRAYFORMULA(IF(ROW(${colLetter}:${colLetter})>=3, ROW(${colLetter}:${colLetter})-2, ""))`;
+        
+        // If row 3 has an error formula and there's existing data, clear it first
+        if (row3HasError && row3Formula) {
+          Logger.log(
+            `Clearing error formula in ${sheetName} row ${targetRow} before setting new formula`
+          );
+          row3Cell.clearContent();
+          addDelay(50);
+        }
+        
+        // If there's existing data in rows 4+, we can't use ARRAYFORMULA that expands
+        // Check if row 3 is empty - if so, we'll set it to 1 (the first ID)
+        // If row 3 already has a value, we'll leave it alone
+        const row3IsEmpty = !row3HasData && (row3Value === null || row3Value === "" || row3Value === "#REF!");
+        
+        let formula;
+        if (hasExistingData) {
+          // There's existing data below, so ARRAYFORMULA can't expand
+          // If row 3 is empty, set it to 1 (first ID value)
+          // Otherwise, leave it as is
+          if (row3IsEmpty) {
+            // Set to simple formula that just calculates row 3's ID (which is 1)
+            formula = `=ROW()-2`;
+          } else {
+            // Row 3 already has a value, skip setting formula
+            Logger.log(
+              `Row 3 already has ID value in ${sheetName}, skipping auto-increment setup`
+            );
+            skipCount++;
+            return;
+          }
+        } else {
+          // No existing data, use ARRAYFORMULA that can expand freely
+          formula = `=ARRAYFORMULA(IF(ROW(${colLetter}:${colLetter})>=3, ROW(${colLetter}:${colLetter})-2, ""))`;
+        }
 
-        sheet.getRange(targetRow, targetCol, 1, 1).setFormula(formula);
-        successCount++;
-        Logger.log(
-          `Set up auto-increment for ${sheetName} column ${headers[idColumnIndex]}`
-        );
+        try {
+          // Set the formula
+          row3Cell.setFormula(formula);
+          addDelay(100);
+          
+          // Verify the formula doesn't have errors
+          const cellValue = row3Cell.getValue();
+          const cellFormula = row3Cell.getFormula();
+          
+          if (cellValue === "#REF!" || 
+              (typeof cellValue === "string" && cellValue.includes("Error")) ||
+              (typeof cellValue === "string" && cellValue.includes("expanded"))) {
+            // Still has error, clear it and skip
+            row3Cell.clearContent();
+            throw new Error("Formula still causing expansion error");
+          }
+          
+          successCount++;
+          if (hasExistingData) {
+            Logger.log(
+              `Set up single-row auto-increment for ${sheetName} column ${headers[idColumnIndex]} (existing data preserved, formula can be copied down for new rows)`
+            );
+          } else {
+            Logger.log(
+              `Set up auto-increment for ${sheetName} column ${headers[idColumnIndex]}`
+            );
+          }
+        } catch (error) {
+          // If formula still fails, skip it to preserve data
+          Logger.log(
+            `Could not set auto-increment formula for ${sheetName} due to existing data conflict. Skipping to preserve data.`
+          );
+          skipCount++;
+        }
       } else {
         Logger.log(`No ID column found in ${sheetName}, skipping`);
         skipCount++;
