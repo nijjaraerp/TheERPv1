@@ -345,6 +345,7 @@ function seedAllData() {
     seedDepartments();
     seedUsers();
     seedSettings();
+    seedDebugSheets();
 
     Logger.log("✅ Data seeding completed successfully!");
     showAlert("✅ Success", "All seed data has been populated!");
@@ -353,6 +354,24 @@ function seedAllData() {
     Logger.log(`❌ Seeding Error: ${e.message}`);
     showAlert("❌ Error", `Seeding failed: ${e.message}`);
   }
+}
+
+function seedDebugSheets() {
+  var ss = getSpreadsheet();
+  var defs = [
+    { name: "DBUG_AppLog", headers: ["DBG_ID","Time_Stamp","Actor","Action","Entity","Entity_ID","Details"] },
+    { name: "DBUG_WarnLog", headers: ["DBG_WARN_ID","Time_Stamp","Actor","Action","Entity","Entity_ID","Details"] },
+    { name: "DBUG_ErrorLog", headers: ["DBG_ERR_ID","Time_Stamp","Actor","Action","Entity","Entity_ID","Message","Error_Object"] }
+  ];
+  defs.forEach(function(def){
+    var sheet = ss.getSheetByName(def.name);
+    if (!sheet) {
+      sheet = ss.insertSheet(def.name);
+      sheet.getRange(1,1,1,def.headers.length).setValues([def.headers]);
+      Logger.log("Created sheet " + def.name);
+    }
+  });
+  Logger.log("✅ Debug sheets ensured");
 }
 
 /**
