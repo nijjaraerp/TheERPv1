@@ -676,6 +676,93 @@ function hashPassword(password) {
   return Utilities.base64Encode(hash);
 }
 
+function appendDebugRow(sheetName, dataObj) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) return;
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var row = headers.map(function (h) {
+    return dataObj[h] !== undefined ? dataObj[h] : "";
+  });
+  sheet.appendRow(row);
+}
+
+function logInfo_(actor, action, entity, id, details) {
+  try {
+    var data = {
+      DBG_ID: generateUniqueId("DBG"),
+      Time_Stamp: new Date().toISOString(),
+      Actor: actor || "",
+      Action: action || "",
+      Entity: entity || "",
+      Entity_ID: id || "",
+      Details:
+        typeof details === "string" ? details : JSON.stringify(details || {}),
+    };
+    appendDebugRow("DBUG_AppLog", data);
+    Logger.log(
+      "INFO " + (action || "") + " " + (entity || "") + " " + (id || "")
+    );
+  } catch (e) {
+    Logger.log("LogInfo Error: " + e.message);
+  }
+}
+
+function logWarn_(actor, action, entity, id, details) {
+  try {
+    var data = {
+      DBG_WARN_ID: generateUniqueId("WARN"),
+      Time_Stamp: new Date().toISOString(),
+      Actor: actor || "",
+      Action: action || "",
+      Entity: entity || "",
+      Entity_ID: id || "",
+      Details:
+        typeof details === "string" ? details : JSON.stringify(details || {}),
+    };
+    appendDebugRow("DBUG_WarnLog", data);
+    Logger.log(
+      "WARN " + (action || "") + " " + (entity || "") + " " + (id || "")
+    );
+  } catch (e) {
+    Logger.log("LogWarn Error: " + e.message);
+  }
+}
+
+function logError_(actor, action, entity, id, message, errorObject) {
+  try {
+    var data = {
+      DBG_ERR_ID: generateUniqueId("ERR"),
+      Time_Stamp: new Date().toISOString(),
+      Actor: actor || "",
+      Action: action || "",
+      Entity: entity || "",
+      Entity_ID: id || "",
+      Message: message || "",
+      Error_Object:
+        typeof errorObject === "string"
+          ? errorObject
+          : JSON.stringify(errorObject || {}),
+    };
+    appendDebugRow("DBUG_ErrorLog", data);
+    try {
+      console.error(message);
+    } catch (_) {}
+    Logger.log(
+      "ERROR " +
+        (action || "") +
+        " " +
+        (entity || "") +
+        " " +
+        (id || "") +
+        " " +
+        (message || "")
+    );
+  } catch (e) {
+    Logger.log("LogError Error: " + e.message);
+  }
+}
+
 /**
  * Extract ID field name from sheet name
  */
@@ -806,8 +893,7 @@ function doPost(e) {
  * Handle HTTP GET requests
  */
 function doGet(e) {
-  // Serve Login.html as default
-  return HtmlService.createHtmlOutput(
-    "<h1>Nijjara ERP</h1><p>Please use the app deployment URL.</p>"
-  );
+  var t = HtmlService.createTemplateFromFile('Login');
+  t.scriptUrl = ScriptApp.getService().getUrl();
+  return t.evaluate().setTitle('Nijjara ERP');
 }
