@@ -1,650 +1,451 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AETERNA / CORE // 3024</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Nijjara ERP - تسجيل الدخول</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-
+    <link rel="stylesheet" href="assets/css/nijjara-theme.css" />
     <style>
-      :root {
-        --neon-cyan: #00f3ff;
-        --neon-magenta: #bc13fe;
-        --void-dark: #050510;
-        --glass-bg: rgba(10, 10, 25, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.1);
+      .glass-stack {
+        pointer-events: none;
+        text-align: center;
       }
 
-      body {
-        margin: 0;
-        overflow: hidden;
-        background-color: var(--void-dark);
-        font-family: "Rajdhani", sans-serif;
-        color: white;
+      .glass-card h1 {
+        color: var(--color-text);
+        margin-bottom: 10px;
       }
 
-      /* --- Quantum Field Canvas --- */
-      #quantum-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: all;
+      .glass-card p {
+        color: var(--color-text-muted);
+        line-height: 1.8;
       }
 
-      /* --- Holographic UI Container --- */
-      #holo-container {
-        perspective: 1000px;
-        z-index: 10;
-        position: relative;
-        height: 100vh;
+      .glass-card .badge-row {
+        margin-top: 18px;
         display: flex;
-        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
         justify-content: center;
       }
 
-      .holo-card {
-        width: 450px;
-        padding: 3rem;
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid var(--glass-border);
-        border-radius: 20px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
-          inset 0 0 30px rgba(0, 243, 255, 0.05);
-        transform-style: preserve-3d;
-        transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
-        transition: transform 0.1s cubic-bezier(0.2, 0.4, 0.6, 1);
-        position: relative;
-        overflow: hidden;
+      .glass-card .badge {
+        border: 1px solid var(--color-border-glass);
+        border-radius: 999px;
+        padding: 8px 18px;
+        color: var(--color-accent-secondary);
+        font-size: 0.9rem;
+        background: rgba(255, 255, 255, 0.04);
       }
 
-      /* Scanline overlay on the card */
-      .holo-card::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          to bottom,
-          transparent 50%,
-          rgba(0, 243, 255, 0.03) 50%
-        );
-        background-size: 100% 4px;
-        pointer-events: none;
-        z-index: 2;
-      }
-
-      /* Glowing borders */
-      .holo-card::before {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        background: linear-gradient(
-          45deg,
-          transparent,
-          var(--neon-cyan),
-          transparent,
-          var(--neon-magenta),
-          transparent
-        );
-        z-index: -1;
-        border-radius: 20px;
-        animation: rotateBorder 4s linear infinite;
-        opacity: 0.3;
-      }
-
-      @keyframes rotateBorder {
-        0% {
-          filter: hue-rotate(0deg);
-        }
-        100% {
-          filter: hue-rotate(360deg);
-        }
-      }
-
-      /* Typography */
-      h1 {
-        font-family: "Orbitron", sans-serif;
-        letter-spacing: 0.2em;
-        text-shadow: 0 0 20px var(--neon-cyan);
-      }
-
-      .input-group {
-        position: relative;
-        margin-bottom: 2.5rem;
-        transform: translateZ(20px);
-      }
-
-      input {
-        width: 100%;
-        background: transparent;
-        border: none;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        font-size: 1.2rem;
-        padding: 10px 0;
-        font-family: "Orbitron", sans-serif;
-        outline: none;
-        transition: all 0.3s ease;
-      }
-
-      input:focus {
-        border-bottom-color: var(--neon-cyan);
-        box-shadow: 0 10px 20px -10px var(--neon-cyan);
-      }
-
-      label {
-        position: absolute;
-        top: 10px;
-        left: 0;
-        color: rgba(255, 255, 255, 0.5);
-        pointer-events: none;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        letter-spacing: 1px;
-      }
-
-      input:focus ~ label,
-      input:valid ~ label {
-        top: -20px;
-        font-size: 0.8rem;
-        color: var(--neon-cyan);
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      /* Biometric Spinner */
-      .bio-ring {
-        position: absolute;
-        right: 0;
-        top: 5px;
-        width: 20px;
-        height: 20px;
-        border: 2px solid transparent;
-        border-top-color: var(--neon-cyan);
-        border-radius: 50%;
-        opacity: 0;
-        transition: opacity 0.3s;
-        animation: spin 1s linear infinite;
-      }
-
-      input:focus ~ .bio-ring {
-        opacity: 1;
-      }
-
-      @keyframes spin {
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Login Button */
-      .btn-neural {
-        background: transparent;
-        border: 1px solid var(--neon-cyan);
-        color: var(--neon-cyan);
-        padding: 15px 40px;
-        font-family: "Orbitron", sans-serif;
-        font-weight: bold;
-        letter-spacing: 3px;
-        width: 100%;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.4s ease;
-        transform: translateZ(30px);
-        text-transform: uppercase;
-      }
-
-      .btn-neural:hover {
-        background: var(--neon-cyan);
-        color: #000;
-        box-shadow: 0 0 30px var(--neon-cyan);
-      }
-
-      .btn-neural::after {
-        content: "";
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.8) 0%,
-          transparent 70%
-        );
-        transform: scale(0);
-        transition: transform 0.6s ease-out;
-        opacity: 0.3;
-      }
-
-      .btn-neural:active::after {
-        transform: scale(1);
-      }
-
-      /* Success Message Overlay */
-      #success-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        z-index: 100;
+      .login-box form {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 2s ease;
-        mix-blend-mode: overlay;
+        flex-direction: column;
+        gap: 14px;
       }
 
-      .scan-line {
-        position: absolute;
-        height: 2px;
-        width: 100%;
-        background: var(--neon-magenta);
-        opacity: 0.5;
-        animation: scan 3s linear infinite;
-        top: -10%;
+      .login-box label {
+        color: var(--color-text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 4px;
       }
 
-      @keyframes scan {
-        0% {
-          top: -10%;
-        }
-        100% {
-          top: 110%;
-        }
+      .login-box .field {
+        display: flex;
+        flex-direction: column;
       }
 
-      .error-message {
-        background: rgba(220, 38, 38, 0.2);
-        border: 1px solid rgba(220, 38, 38, 0.5);
-        color: #ff6b6b;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        display: none;
-        font-family: "Rajdhani", sans-serif;
-      }
-
-      .error-message.show {
-        display: block;
+      .loading {
+        color: var(--color-text-muted);
+        text-align: center;
+        font-size: 0.85rem;
+        margin-top: 8px;
       }
     </style>
   </head>
-  <body>
-    <!-- Background Physics Layer -->
-    <canvas id="quantum-canvas"></canvas>
-
-    <!-- Main Interactive Layer -->
-    <div id="holo-container">
-      <div class="holo-card" id="login-card">
-        <!-- Decorative Hologram UI Elements -->
-        <div
-          class="absolute top-4 left-4 w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-[0_0_10px_#00f3ff]"
-        ></div>
-        <div
-          class="absolute top-4 right-4 text-[10px] text-cyan-400 font-mono tracking-widest opacity-70"
+  <body class="nijjara-body">
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <symbol
+          id="icon-hrm"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          SYS.V.99.4
-        </div>
-        <div
-          class="absolute bottom-4 left-4 text-[10px] text-fuchsia-500 font-mono tracking-widest opacity-70"
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </symbol>
+        <symbol
+          id="icon-prj"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         >
-          SECURE::LINK
-        </div>
-        <div
-          class="absolute bottom-4 right-4 w-16 h-1 bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-50"
-        ></div>
+          <path
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+          ></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-fin"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </symbol>
+        <symbol
+          id="icon-sys"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-power"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+          <line x1="12" y1="2" x2="12" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-grid"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </symbol>
+        <symbol
+          id="icon-layers"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </symbol>
+        <symbol
+          id="icon-maximize"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-restore"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-eye"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </symbol>
+        <symbol
+          id="icon-plus"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-search"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </symbol>
+        <symbol
+          id="icon-minus"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </symbol>
+      </defs>
+    </svg>
 
-        <!-- Content -->
-        <div class="text-center mb-10 transform translate-z-10">
-          <h1 class="text-4xl font-black text-white mb-2">AETERNA</h1>
-          <p class="text-xs text-cyan-300 tracking-[0.5em] uppercase">
-            Neural Enterprise Core
-          </p>
-        </div>
-
-        <div class="error-message" id="errorMessage"></div>
-
-        <form id="login-form" onsubmit="handleLogin(event); return false;">
-          <div class="input-group">
-            <input type="text" id="identity" name="username" required autocomplete="off" />
-            <label for="identity">NEURAL ID</label>
-            <div class="bio-ring"></div>
+    <div id="boot-screen">
+      <div id="boot-log"></div>
+      <div class="login-box" id="login-box">
+        <h2>Nijjara ERP sys</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="field">
+            <label for="username">اسم المستخدم</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="اسم المستخدم"
+              required
+            />
           </div>
-
-          <div class="input-group">
-            <input type="password" id="synapse" name="password" required />
-            <label for="synapse">SYNAPTIC KEY</label>
-            <div
-              class="bio-ring"
-              style="border-top-color: var(--neon-magenta)"
-            ></div>
+          <div class="field">
+            <label for="password">كلمة السر</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="******"
+              required
+            />
           </div>
-
-          <button type="submit" class="btn-neural" id="loginBtn">
-            INITIATE LINK
-          </button>
+          <button type="submit" id="loginBtn">تسجيل الدخول</button>
+          <div id="login-feedback"></div>
+          <div id="loading" class="loading" style="display: none">
+            جاري التحقق...
+          </div>
         </form>
       </div>
     </div>
 
-    <!-- Flash Effect Overlay -->
-    <div id="success-overlay">
-      <h1 class="text-6xl text-black font-black tracking-widest">
-        LINK ESTABLISHED
-      </h1>
+    <div id="nijjara-os" aria-hidden="true">
+      <div id="holo-deck"><div id="particles"></div></div>
+      <div id="status-bar">
+        <div id="user-info">USER: ...</div>
+        <div id="date-time">Loading clock...</div>
+      </div>
+      <div id="task-switcher"></div>
+      <div id="neural-dock">
+        <div class="dock-group window-mgmt">
+          <div class="dock-app" id="app-grid" data-title="ترتيب شبكي">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-grid"></use></svg>
+            </div>
+            <div class="dock-app-label">شبكي</div>
+          </div>
+          <div class="dock-app" id="app-cascade" data-title="ترتيب متتالي">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-layers"></use></svg>
+            </div>
+            <div class="dock-app-label">متتالي</div>
+          </div>
+        </div>
+        <div class="dock-group modules">
+          <div
+            class="dock-app"
+            data-title="يتطلّب تسجيل الدخول"
+            onclick="NijjaraShell.showToast('سجّل الدخول أولاً', 'info')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-hrm"></use></svg>
+            </div>
+            <div class="dock-app-label">الموارد</div>
+          </div>
+          <div
+            class="dock-app"
+            data-title="يتطلّب تسجيل الدخول"
+            onclick="NijjaraShell.showToast('سجّل الدخول أولاً', 'info')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-prj"></use></svg>
+            </div>
+            <div class="dock-app-label">المشاريع</div>
+          </div>
+          <div
+            class="dock-app"
+            data-title="يتطلّب تسجيل الدخول"
+            onclick="NijjaraShell.showToast('سجّل الدخول أولاً', 'info')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-fin"></use></svg>
+            </div>
+            <div class="dock-app-label">المالية</div>
+          </div>
+        </div>
+        <div
+          class="dock-app"
+          id="app-shutdown"
+          data-title="إعادة تشغيل"
+          style="color: var(--color-accent-red)"
+          onclick="location.reload()"
+        >
+          <div class="dock-app-icon">
+            <svg style="stroke: var(--color-accent-red)">
+              <use href="#icon-power"></use>
+            </svg>
+          </div>
+          <div class="dock-app-label" style="color: var(--color-accent-red)">
+            خروج
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-stack">
+        <section class="glass-card">
+          <h1>نظام تشغيل Nijjara-OS</h1>
+          <p>
+            كل من وحدات الموارد، المشاريع، والمالية تعمل الآن داخل تجربة زجاجية
+            موحّدة. ابدأ تسجيل الدخول لتشغيل جلسة عملك الميتاداتية.
+          </p>
+          <div class="badge-row">
+            <span class="badge">جلسات مشفّرة</span>
+            <span class="badge">تحكم فوري</span>
+            <span class="badge">تصميم زجاجي</span>
+          </div>
+        </section>
+      </div>
     </div>
 
+    <div class="toast-container" id="toastContainer"></div>
+
+    <template id="task-thumb-template">
+      <div class="task-thumb">
+        <div class="task-thumb-icon">
+          <svg><use href="#icon-sys"></use></svg>
+        </div>
+        <span class="task-thumb-title">Window</span>
+      </div>
+    </template>
+
+    <script src="assets/js/nijjara-shell.js"></script>
     <script>
-      // --- CONFIGURATION ---
-      const LOGGING = true;
-      const PARTICLE_COUNT = 150;
-      const CONNECTION_DISTANCE = 100;
-      const MOUSE_RADIUS = 200;
-      const CONFIG = {
-        SCRIPT_URL: '<?= scriptUrl ?>'
-      };
+      const bootMessages = [
+        "BOOTING NIJJARA-OS v1.0...",
+        "Loading kernel modules... OK",
+        "Initializing 3D glass display... DONE",
+        "Connecting to neural-link... SECURE",
+        "Loading user authentication service...",
+        "Awaiting system key...",
+      ];
 
-      // --- LOGGER ---
-      function log(action, details) {
-        if (LOGGING) {
-          const timestamp = new Date().toISOString();
-          console.log(`[${timestamp}] [${action}]:`, details);
-        }
-      }
-
-      // --- CANVAS SETUP ---
-      const canvas = document.getElementById("quantum-canvas");
-      const ctx = canvas.getContext("2d");
-      let width, height;
-      let particles = [];
-      let warpSpeed = false;
-
-      // Resize Handler
-      function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
-        log("SYSTEM", `Canvas resized to ${width}x${height}`);
-      }
-      window.addEventListener("resize", resize);
-      resize();
-
-      // --- MOUSE TRACKING ---
-      let mouse = { x: null, y: null };
-      window.addEventListener("mousemove", (e) => {
-        mouse.x = e.x;
-        mouse.y = e.y;
-        handleCardTilt(e);
-      });
-
-      // --- 3D TILT LOGIC (Parallax) ---
-      const card = document.getElementById("login-card");
-      function handleCardTilt(e) {
-        const x = e.clientX;
-        const y = e.clientY;
-
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -10;
-        const rotateY = ((x - centerX) / centerX) * 10;
-
-        card.style.setProperty("--rotateX", rotateX + "deg");
-        card.style.setProperty("--rotateY", rotateY + "deg");
-      }
-
-      // --- PARTICLE SYSTEM ---
-      class Particle {
-        constructor() {
-          this.x = Math.random() * width;
-          this.y = Math.random() * height;
-          this.z = Math.random() * 2 + 0.5;
-          this.vx = (Math.random() - 0.5) * 0.5;
-          this.vy = (Math.random() - 0.5) * 0.5;
-          this.size = Math.random() * 2 + 1;
-          this.color =
-            Math.random() > 0.5 ? "rgba(0, 243, 255," : "rgba(188, 19, 254,";
-        }
-
-        update() {
-          if (!warpSpeed) {
-            this.x += this.vx * this.z;
-            this.y += this.vy * this.z;
-
-            if (mouse.x != null) {
-              let dx = mouse.x - this.x;
-              let dy = mouse.y - this.y;
-              let distance = Math.sqrt(dx * dx + dy * dy);
-
-              if (distance < MOUSE_RADIUS) {
-                const forceDirectionX = dx / distance;
-                const forceDirectionY = dy / distance;
-                const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-                const directionMultiplier = -1;
-
-                this.x += forceDirectionX * force * 2 * directionMultiplier;
-                this.y += forceDirectionY * force * 2 * directionMultiplier;
-              }
-            }
-          } else {
-            const cx = width / 2;
-            const cy = height / 2;
-            let dx = this.x - cx;
-            let dy = this.y - cy;
-
-            if (dx === 0) dx = Math.random() - 0.5;
-            if (dy === 0) dy = Math.random() - 0.5;
-
-            this.x += dx * 0.1;
-            this.y += dy * 0.1;
-            this.size += 0.1;
-          }
-
-          if (this.x > width) this.x = 0;
-          if (this.x < 0) this.x = width;
-          if (this.y > height) this.y = 0;
-          if (this.y < 0) this.y = height;
-        }
-
-        draw() {
-          ctx.beginPath();
-          let alpha = (this.z / 2.5) * 0.8;
-          if (warpSpeed) alpha = 1;
-
-          ctx.fillStyle = this.color + alpha + ")";
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      function initParticles() {
-        particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-          particles.push(new Particle());
-        }
-        log("SYSTEM", "Particles Initialized");
-      }
-
-      function drawLines() {
-        if (warpSpeed) return;
-
-        let opacityValue = 1;
-        for (let a = 0; a < particles.length; a++) {
-          for (let b = a; b < particles.length; b++) {
-            let distance =
-              (particles[a].x - particles[b].x) *
-                (particles[a].x - particles[b].x) +
-              (particles[a].y - particles[b].y) *
-                (particles[a].y - particles[b].y);
-
-            if (distance < CONNECTION_DISTANCE * CONNECTION_DISTANCE) {
-              opacityValue = 1 - distance / 20000;
-              ctx.strokeStyle = "rgba(0, 243, 255," + opacityValue * 0.2 + ")";
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(particles[a].x, particles[a].y);
-              ctx.lineTo(particles[b].x, particles[b].y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-
-      function animate() {
-        ctx.fillStyle = warpSpeed
-          ? "rgba(5, 5, 16, 0.2)"
-          : "rgba(5, 5, 16, 0.5)";
-        ctx.fillRect(0, 0, width, height);
-
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
-        }
-        drawLines();
-        requestAnimationFrame(animate);
-      }
-
-      // --- USER INTERACTION ---
-      const inputs = document.querySelectorAll("input");
-      inputs.forEach((input) => {
-        input.addEventListener("input", (e) => {
-          const ring = e.target.parentElement.querySelector(".bio-ring");
-          if (ring) {
-            ring.style.borderWidth = Math.floor(Math.random() * 4 + 1) + "px";
-            if (e.target.value.length % 3 === 0)
-              log("HAPTIC", "Simulated micro-vibration");
-          }
+      document.addEventListener("DOMContentLoaded", () => {
+        NijjaraShell.init();
+        NijjaraShell.bootSequence(bootMessages, "#boot-log", () => {
+          document.getElementById("login-box").style.display = "flex";
         });
       });
 
-      // --- LOGIN HANDLING ---
-      async function handleLogin(event) {
-        event.preventDefault();
+      function revealShell(user) {
+        const bootScreen = document.getElementById("boot-screen");
+        bootScreen.style.opacity = "0";
+        bootScreen.style.visibility = "hidden";
+        const shell = document.getElementById("nijjara-os");
+        shell.style.display = "block";
+        document.getElementById("user-info").textContent = `USER: ${user}`;
+      }
 
-        const username = document.getElementById("identity").value.trim();
-        const password = document.getElementById("synapse").value;
-        const errorMessage = document.getElementById("errorMessage");
+      function handleLogin(event) {
+        event.preventDefault();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const feedback = document.getElementById("login-feedback");
+        const loadingEl = document.getElementById("loading");
+        const btnEl = document.getElementById("loginBtn");
 
         if (!username || !password) {
-          showError("NEURAL INTERFACE ERROR: INPUT STREAMS EMPTY");
+          NijjaraShell.showToast("يرجى تعبئة كل الحقول", "error");
           return;
         }
 
-        clearError();
+        feedback.textContent = "";
+        loadingEl.style.display = "block";
+        btnEl.disabled = true;
 
-        const btn = document.getElementById("loginBtn");
-        btn.innerText = "SYNCHRONIZING...";
-        btn.style.pointerEvents = "none";
+        google.script.run
+          .withSuccessHandler(function (response) {
+            loadingEl.style.display = "none";
+            btnEl.disabled = false;
 
-        try {
-          const response = await callBackend('login', {
-            username: username,
-            password: password
-          });
+            if (response.success) {
+              revealShell(username);
+              NijjaraShell.showToast(
+                response.message || "تم تسجيل الدخول",
+                "success"
+              );
+              sessionStorage.setItem("sessionToken", response.token);
+              sessionStorage.setItem("user", JSON.stringify(response.user));
+              sessionStorage.setItem("flashMessage", "تم تسجيل الدخول بنجاح");
+              sessionStorage.setItem("flashType", "success");
 
-          if (response.success) {
-            sessionStorage.setItem('auth_token', response.token);
-            sessionStorage.setItem('session_id', response.sessionId);
-            sessionStorage.setItem('bootstrap', JSON.stringify(response.bootstrap));
-            localStorage.setItem('erp_session_token', response.token);
-            localStorage.setItem('erp_user', JSON.stringify(response.user || {}));
-            localStorage.setItem('erp_bootstrap', JSON.stringify(response.bootstrap || {}));
-
-            warpSpeed = true;
-            card.style.transition = "all 1s ease-in";
-            card.style.transform = "scale(0) rotateX(720deg)";
-            card.style.opacity = "0";
-
-            setTimeout(() => {
-              const overlay = document.getElementById("success-overlay");
-              overlay.style.opacity = "1";
-              log("SYSTEM", "Access Granted. Transitioning environment.");
-            }, 1500);
-
-            setTimeout(() => {
-              window.location.href = 'Dashboard.html';
-            }, 4000);
-          } else {
-            showError(response.message || 'NEURAL INTERFACE ERROR: AUTHENTICATION FAILED');
-            btn.innerText = "INITIATE LINK";
-            btn.style.pointerEvents = "auto";
-          }
-        } catch (error) {
-          console.error('Login Error:', error);
-          showError('NEURAL INTERFACE ERROR: CONNECTION FAILED');
-          btn.innerText = "INITIATE LINK";
-          btn.style.pointerEvents = "auto";
-        }
+              setTimeout(function () {
+                google.script.run
+                  .withSuccessHandler(function (html) {
+                    document.body.innerHTML = html;
+                  })
+                  .getDashboard();
+              }, 600);
+            } else {
+              feedback.textContent = response.message || "تعذر تسجيل الدخول";
+              NijjaraShell.showToast(
+                response.message || "تعذر تسجيل الدخول",
+                "error"
+              );
+            }
+          })
+          .withFailureHandler(function (error) {
+            loadingEl.style.display = "none";
+            btnEl.disabled = false;
+            const msg = "حدث خطأ في الاتصال";
+            feedback.textContent = msg;
+            NijjaraShell.showToast(`${msg}: ${error.message}`, "error");
+          })
+          .doLogin(username, password);
       }
 
-      async function callBackend(action, params) {
-        const payload = {
-          action: action,
-          params: params
-        };
-
-        try {
-          const response = await fetch(CONFIG.SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          return await response.json();
-        } catch (error) {
-          console.error('Backend call failed:', error);
-          throw error;
-        }
-      }
-
-      function showError(message) {
-        const errorDiv = document.getElementById("errorMessage");
-        errorDiv.textContent = message;
-        errorDiv.classList.add("show");
-      }
-
-      function clearError() {
-        document.getElementById("errorMessage").classList.remove("show");
-      }
-
-      // Initialize
-      document.addEventListener('DOMContentLoaded', function() {
-        if (sessionStorage.getItem('auth_token')) {
-          window.location.href = 'Dashboard.html';
-        }
-        document.getElementById("identity").focus();
-      });
-
-      // --- STARTUP ---
-      initParticles();
-      animate();
-      log("SYSTEM", "AETERNA CORE UI LOADED");
+      console.log("[LOGIN PAGE] Ready");
     </script>
   </body>
 </html>

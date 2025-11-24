@@ -1,1187 +1,641 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AETERNA / CORE // DASHBOARD</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Nijjara ERP - لوحة التحكم</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <link rel="stylesheet" href="assets/css/nijjara-theme.css" />
     <style>
-      :root {
-        --neon-cyan: #00f3ff;
-        --neon-magenta: #bc13fe;
-        --void-dark: #050510;
-        --glass-bg: rgba(10, 10, 25, 0.4);
-        --glass-border: rgba(255, 255, 255, 0.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        overflow-x: hidden;
-        background-color: var(--void-dark);
-        font-family: "Rajdhani", sans-serif;
-        color: white;
-      }
-
-      /* --- Quantum Field Canvas --- */
-      #quantum-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: all;
-      }
-
-      /* --- Header --- */
-      .header {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border-bottom: 1px solid var(--glass-border);
-        color: white;
-        padding: 15px 30px;
+      .dashboard-window .window-content {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .menu-toggle {
-        background: transparent;
-        border: 1px solid var(--neon-cyan);
-        color: var(--neon-cyan);
-        font-size: 20px;
-        cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-      }
-
-      .menu-toggle:hover {
-        background: var(--neon-cyan);
-        color: #000;
-        box-shadow: 0 0 20px var(--neon-cyan);
-      }
-
-      .header-title {
-        font-size: 24px;
-        font-weight: 700;
-        font-family: "Orbitron", sans-serif;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--glass-bg);
-        border: 1px solid var(--neon-cyan);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-      }
-
-      .logout-btn {
-        background: transparent;
-        color: var(--neon-magenta);
-        border: 1px solid var(--neon-magenta);
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        font-family: "Orbitron", sans-serif;
-      }
-
-      .logout-btn:hover {
-        background: var(--neon-magenta);
-        color: #000;
-        box-shadow: 0 0 20px var(--neon-magenta);
-      }
-
-      /* --- Sidebar --- */
-      .sidebar {
-        position: fixed;
-        top: 70px;
-        right: -300px;
-        width: 300px;
-        height: calc(100vh - 70px);
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border-left: 1px solid var(--glass-border);
-        box-shadow: -2px 0 20px rgba(0, 0, 0, 0.5);
-        transition: right 0.3s ease;
-        z-index: 999;
-        overflow-y: auto;
-      }
-
-      .sidebar.open {
-        right: 0;
-      }
-
-      .sidebar-overlay {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        height: calc(100vh - 70px);
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 998;
-        display: none;
-      }
-
-      .sidebar-overlay.show {
-        display: block;
-      }
-
-      .sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid var(--glass-border);
-        background: rgba(0, 243, 255, 0.05);
-      }
-
-      .sidebar-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--neon-cyan);
-        font-family: "Orbitron", sans-serif;
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .nav-menu {
-        padding: 10px 0;
-      }
-
-      .nav-item {
-        margin: 0;
-      }
-
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 20px;
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        transition: all 0.3s ease;
-        border-right: 3px solid transparent;
-      }
-
-      .nav-link:hover {
-        background: rgba(0, 243, 255, 0.1);
-        color: var(--neon-cyan);
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .nav-link.active {
-        background: rgba(0, 243, 255, 0.15);
-        color: var(--neon-cyan);
-        border-right-color: var(--neon-cyan);
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .nav-link i {
-        width: 20px;
-        text-align: center;
-      }
-
-      /* --- Main Content --- */
-      .main-content {
-        margin-top: 70px;
-        padding: 30px;
-        min-height: calc(100vh - 70px);
-        position: relative;
-        z-index: 10;
-      }
-
-      .content-header {
-        margin-bottom: 30px;
-      }
-
-      .page-title {
-        font-size: 32px;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 8px;
-        font-family: "Orbitron", sans-serif;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 20px var(--neon-cyan);
-      }
-
-      .page-subtitle {
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-
-      /* --- Dashboard Cards --- */
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        flex-direction: column;
         gap: 24px;
-        margin-bottom: 40px;
       }
 
-      .metric-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid var(--glass-border);
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-          inset 0 0 20px rgba(0, 243, 255, 0.05);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .metric-card::before {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        background: linear-gradient(
-          45deg,
-          transparent,
-          var(--neon-cyan),
-          transparent,
-          var(--neon-magenta),
-          transparent
-        );
-        z-index: -1;
-        border-radius: 16px;
-        animation: rotateBorder 4s linear infinite;
-        opacity: 0.2;
-      }
-
-      @keyframes rotateBorder {
-        0% {
-          filter: hue-rotate(0deg);
-        }
-        100% {
-          filter: hue-rotate(360deg);
-        }
-      }
-
-      .metric-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(0, 243, 255, 0.2),
-          inset 0 0 30px rgba(0, 243, 255, 0.1);
-        border-color: var(--neon-cyan);
-      }
-
-      .metric-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-      }
-
-      .metric-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        border: 1px solid var(--glass-border);
-      }
-
-      .metric-icon.users {
-        background: rgba(0, 243, 255, 0.1);
-        color: var(--neon-cyan);
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-      }
-      .metric-icon.projects {
-        background: rgba(188, 19, 254, 0.1);
-        color: var(--neon-magenta);
-        box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
-      }
-      .metric-icon.finance {
-        background: rgba(0, 243, 255, 0.1);
-        color: var(--neon-cyan);
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-      }
-      .metric-icon.system {
-        background: rgba(188, 19, 254, 0.1);
-        color: var(--neon-magenta);
-        box-shadow: 0 0 20px rgba(188, 19, 254, 0.3);
-      }
-
-      .metric-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: white;
-        margin-bottom: 4px;
-        font-family: "Orbitron", sans-serif;
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .metric-label {
-        font-size: 14px;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 500;
-      }
-
-      .metric-change {
-        font-size: 12px;
-        font-weight: 600;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-family: "Orbitron", sans-serif;
-      }
-
-      .metric-change.positive {
-        background: rgba(0, 243, 255, 0.2);
-        color: var(--neon-cyan);
-        border: 1px solid var(--neon-cyan);
-      }
-      .metric-change.negative {
-        background: rgba(188, 19, 254, 0.2);
-        color: var(--neon-magenta);
-        border: 1px solid var(--neon-magenta);
-      }
-
-      /* --- Content Area --- */
-      .content-area {
-        background: var(--glass-bg);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid var(--glass-border);
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        position: relative;
-      }
-
-      .content-area::before {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        background: linear-gradient(
-          45deg,
-          transparent,
-          var(--neon-cyan),
-          transparent,
-          var(--neon-magenta),
-          transparent
-        );
-        z-index: -1;
-        border-radius: 16px;
-        animation: rotateBorder 4s linear infinite;
-        opacity: 0.2;
-      }
-
-      .content-header-bar {
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--glass-border);
-        background: rgba(0, 243, 255, 0.05);
+      .window-hero {
         display: flex;
         justify-content: space-between;
         align-items: center;
-      }
-
-      .content-title {
-        font-size: 20px;
-        font-weight: 600;
-        color: white;
-        font-family: "Orbitron", sans-serif;
-        text-shadow: 0 0 10px var(--neon-cyan);
-      }
-
-      .content-actions {
-        display: flex;
+        flex-wrap: wrap;
         gap: 12px;
+      }
+
+      .window-hero h1 {
+        font-size: 2rem;
+        color: var(--color-text);
+      }
+
+      .chip {
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: rgba(0, 120, 240, 0.15);
+        border: 1px solid rgba(0, 160, 240, 0.4);
+        color: var(--color-accent-secondary);
+        font-size: 0.9rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+      }
+
+      .stat-card {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--color-border-glass);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+        color: var(--color-accent-secondary);
+      }
+
+      .stat-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+      }
+
+      .stat-label {
+        color: var(--color-text-muted);
+      }
+
+      .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
       }
 
       .action-btn {
-        padding: 8px 16px;
-        border: 1px solid var(--glass-border);
-        background: var(--glass-bg);
-        color: white;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        border: 1px solid var(--color-border-glass);
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 20px;
         display: flex;
+        gap: 16px;
         align-items: center;
-        gap: 8px;
-        font-family: "Rajdhani", sans-serif;
+        cursor: pointer;
+        transition: transform 0.2s ease, border 0.2s ease;
       }
 
       .action-btn:hover {
-        background: rgba(0, 243, 255, 0.1);
-        border-color: var(--neon-cyan);
-        color: var(--neon-cyan);
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        transform: translateY(-4px);
+        border-color: var(--color-accent-primary);
       }
 
-      .action-btn.primary {
+      .action-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        display: grid;
+        place-items: center;
+        font-size: 1.6rem;
+      }
+
+      .action-title {
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .action-desc {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+      }
+
+      .logout-btn {
+        border: none;
         background: transparent;
-        color: var(--neon-cyan);
-        border-color: var(--neon-cyan);
+        color: var(--color-accent-red);
+        font-weight: 700;
+        cursor: pointer;
       }
 
-      .action-btn.primary:hover {
-        background: var(--neon-cyan);
-        color: #000;
-        box-shadow: 0 0 30px var(--neon-cyan);
-      }
-
-      .content-body {
-        padding: 24px;
-      }
-
-      /* --- Table Styles --- */
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-
-      .data-table th,
-      .data-table td {
-        padding: 12px 16px;
-        text-align: left;
-        border-bottom: 1px solid var(--glass-border);
-        color: rgba(255, 255, 255, 0.8);
-      }
-
-      .data-table th {
-        background: rgba(0, 243, 255, 0.05);
-        font-weight: 600;
-        color: var(--neon-cyan);
-        font-size: 14px;
-        font-family: "Orbitron", sans-serif;
-      }
-
-      .data-table tbody tr:hover {
-        background: rgba(0, 243, 255, 0.05);
-      }
-
-      .data-table tbody tr:last-child td {
-        border-bottom: none;
-      }
-
-      /* --- Loading States --- */
-      .loading-spinner {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 2px solid var(--glass-border);
-        border-radius: 50%;
-        border-top-color: var(--neon-cyan);
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .loading-overlay {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        height: calc(100vh - 70px);
-        background: rgba(5, 5, 16, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        display: none;
-      }
-
-      /* --- Empty State --- */
-      .empty-state {
+      .footer-note {
+        color: var(--color-text-muted);
         text-align: center;
-        padding: 60px 20px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-
-      .empty-state i {
-        font-size: 48px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-        color: var(--neon-cyan);
-      }
-
-      .empty-state h3 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: white;
-        font-family: "Orbitron", sans-serif;
-      }
-
-      /* --- Responsive --- */
-      @media (max-width: 768px) {
-        .header {
-          padding: 15px 20px;
-        }
-
-        .header-title {
-          font-size: 20px;
-        }
-
-        .sidebar {
-          width: 280px;
-        }
-
-        .main-content {
-          padding: 20px 15px;
-        }
-
-        .dashboard-grid {
-          grid-template-columns: 1fr;
-          gap: 16px;
-        }
-
-        .content-header-bar {
-          flex-direction: column;
-          gap: 16px;
-          align-items: stretch;
-        }
-
-        .content-actions {
-          justify-content: center;
-        }
       }
     </style>
   </head>
-  <body>
-    <!-- Background Physics Layer -->
-    <canvas id="quantum-canvas"></canvas>
+  <body class="nijjara-body">
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <symbol
+          id="icon-hrm"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </symbol>
+        <symbol
+          id="icon-prj"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+          ></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-fin"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </symbol>
+        <symbol
+          id="icon-sys"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-power"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+          <line x1="12" y1="2" x2="12" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-grid"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </symbol>
+        <symbol
+          id="icon-layers"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </symbol>
+        <symbol
+          id="icon-maximize"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-restore"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"
+          ></path>
+        </symbol>
+        <symbol
+          id="icon-eye"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </symbol>
+        <symbol
+          id="icon-plus"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </symbol>
+        <symbol
+          id="icon-minus"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </symbol>
+      </defs>
+    </svg>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-      <div class="loading-spinner"></div>
+    <div id="nijjara-os">
+      <div id="holo-deck"><div id="particles"></div></div>
+      <div id="status-bar">
+        <div id="user-info">USER: ...</div>
+        <div id="date-time">Loading clock...</div>
+      </div>
+      <div id="task-switcher"></div>
+      <div id="neural-dock">
+        <div class="dock-group window-mgmt">
+          <div class="dock-app" id="app-grid" data-title="ترتيب شبكي">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-grid"></use></svg>
+            </div>
+            <div class="dock-app-label">شبكي</div>
+          </div>
+          <div class="dock-app" id="app-cascade" data-title="ترتيب متتالي">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-layers"></use></svg>
+            </div>
+            <div class="dock-app-label">متتالي</div>
+          </div>
+          <div class="dock-app" id="app-minimize-all" data-title="تصغير الكل">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-minus"></use></svg>
+            </div>
+            <div class="dock-app-label">تصغير</div>
+          </div>
+          <div class="dock-app" id="app-expand-all" data-title="إظهار الكل">
+            <div class="dock-app-icon">
+              <svg><use href="#icon-maximize"></use></svg>
+            </div>
+            <div class="dock-app-label">إظهار</div>
+          </div>
+        </div>
+        <div class="dock-group modules">
+          <div
+            class="dock-app"
+            data-title="الموارد البشرية"
+            onclick="navigateModule('HRM')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-hrm"></use></svg>
+            </div>
+            <div class="dock-app-label">الموارد</div>
+          </div>
+          <div
+            class="dock-app"
+            data-title="المشاريع"
+            onclick="navigateModule('PRJ')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-prj"></use></svg>
+            </div>
+            <div class="dock-app-label">المشاريع</div>
+          </div>
+          <div
+            class="dock-app"
+            data-title="المالية"
+            onclick="navigateModule('FIN')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-fin"></use></svg>
+            </div>
+            <div class="dock-app-label">المالية</div>
+          </div>
+          <div
+            class="dock-app"
+            data-title="النظام"
+            onclick="navigateModule('SYS')"
+          >
+            <div class="dock-app-icon">
+              <svg><use href="#icon-sys"></use></svg>
+            </div>
+            <div class="dock-app-label">النظام</div>
+          </div>
+        </div>
+        <div
+          class="dock-app"
+          id="app-shutdown"
+          data-title="تسجيل الخروج"
+          style="color: var(--color-accent-red)"
+          onclick="handleLogout()"
+        >
+          <div class="dock-app-icon">
+            <svg style="stroke: var(--color-accent-red)">
+              <use href="#icon-power"></use>
+            </svg>
+          </div>
+          <div class="dock-app-label" style="color: var(--color-accent-red)">
+            خروج
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-stack">
+        <section
+          class="app-window dashboard-window"
+          data-module-id="sys"
+          id="system-overview"
+        >
+          <div class="window-header">
+            <div class="window-controls">
+              <div class="window-controls-right">
+                <button class="win-btn-icon btn-toggle-fab" title="إظهار/إخفاء">
+                  <svg><use href="#icon-eye"></use></svg>
+                </button>
+              </div>
+              <span class="window-title">لوحة التحكم الرئيسية</span>
+              <div class="window-controls-left">
+                <button class="win-btn-icon btn-min" title="تصغير">
+                  <svg>
+                    <use
+                      href="#icon-minus"
+                      style="stroke-width: 4; transform: scale(0.8)"
+                    ></use>
+                  </svg>
+                </button>
+                <button class="win-btn-icon btn-max" title="تكبير">
+                  <svg><use href="#icon-maximize"></use></svg>
+                </button>
+                <button class="win-btn-icon btn-close" title="إغلاق">
+                  <svg>
+                    <use
+                      href="#icon-plus"
+                      style="
+                        stroke-width: 4;
+                        transform: rotate(45deg) scale(0.8);
+                      "
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="window-content">
+            <div class="window-hero">
+              <div>
+                <h1>لوحة التحكم الرئيسية</h1>
+                <p class="action-desc">تحديث لحظي لبيانات الموارد والمشاريع</p>
+              </div>
+              <span class="chip">حالة النظام: مستقرة</span>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-icon">👥</span>
+                <strong class="stat-value">0</strong>
+                <span class="stat-label">إجمالي الموظفين</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">🎯</span>
+                <strong class="stat-value">0</strong>
+                <span class="stat-label">المشاريع النشطة</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">🧾</span>
+                <strong class="stat-value">0</strong>
+                <span class="stat-label">الفواتير المعلّقة</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">📈</span>
+                <strong class="stat-value">0%</strong>
+                <span class="stat-label">معدل الإنجاز</span>
+              </div>
+            </div>
+            <p class="footer-note">© 2025 Nijjara ERP - جميع الحقوق محفوظة</p>
+          </div>
+        </section>
+
+        <section
+          class="app-window dashboard-window"
+          data-module-id="sys"
+          id="quick-actions"
+        >
+          <div class="window-header">
+            <div class="window-controls">
+              <div class="window-controls-right">
+                <button class="win-btn-icon btn-toggle-fab" title="إظهار/إخفاء">
+                  <svg><use href="#icon-eye"></use></svg>
+                </button>
+              </div>
+              <span class="window-title">إجراءات سريعة</span>
+              <div class="window-controls-left">
+                <button class="win-btn-icon btn-min" title="تصغير">
+                  <svg>
+                    <use
+                      href="#icon-minus"
+                      style="stroke-width: 4; transform: scale(0.8)"
+                    ></use>
+                  </svg>
+                </button>
+                <button class="win-btn-icon btn-max" title="تكبير">
+                  <svg><use href="#icon-maximize"></use></svg>
+                </button>
+                <button class="win-btn-icon btn-close" title="إغلاق">
+                  <svg>
+                    <use
+                      href="#icon-plus"
+                      style="
+                        stroke-width: 4;
+                        transform: rotate(45deg) scale(0.8);
+                      "
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="window-content">
+            <div class="actions-grid">
+              <div
+                class="action-btn"
+                onclick="quickAction('إضافة موظف قيد التطوير')"
+              >
+                <div class="action-icon">👤</div>
+                <div>
+                  <div class="action-title">إضافة موظف</div>
+                  <div class="action-desc">تسجيل موظف جديد للنظام</div>
+                </div>
+              </div>
+              <div
+                class="action-btn"
+                onclick="quickAction('إنشاء مشروع قيد التطوير')"
+              >
+                <div class="action-icon">🛠️</div>
+                <div>
+                  <div class="action-title">مشروع جديد</div>
+                  <div class="action-desc">بدء مشروع ومتابعة التنفيذ</div>
+                </div>
+              </div>
+              <div
+                class="action-btn"
+                onclick="quickAction('إنشاء فاتورة قيد التطوير')"
+              >
+                <div class="action-icon">💼</div>
+                <div>
+                  <div class="action-title">فاتورة جديدة</div>
+                  <div class="action-desc">إنشاء وإرسال فاتورة</div>
+                </div>
+              </div>
+              <div
+                class="action-btn"
+                onclick="quickAction('تقارير قيد التطوير')"
+              >
+                <div class="action-icon">📊</div>
+                <div>
+                  <div class="action-title">التقارير</div>
+                  <div class="action-desc">عرض التقارير الحالية</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
 
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-title">AETERNA</div>
-      </div>
-      <div class="header-right">
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">
-            <i class="fas fa-user"></i>
-          </div>
-          <span id="userName">User</span>
+    <div class="toast-container" id="toastContainer"></div>
+    <template id="task-thumb-template">
+      <div class="task-thumb">
+        <div class="task-thumb-icon">
+          <svg><use href="#icon-sys"></use></svg>
         </div>
-        <button class="logout-btn" id="logoutBtn">
-          <i class="fas fa-sign-out-alt"></i>
-          LOGOUT
-        </button>
+        <span class="task-thumb-title">Window</span>
       </div>
-    </header>
+    </template>
 
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">NAVIGATION</div>
-      </div>
-      <ul class="nav-menu" id="navMenu">
-        <!-- Navigation items will be populated dynamically -->
-      </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Dashboard Content -->
-      <div id="dashboardContent">
-        <div class="content-header">
-          <h1 class="page-title">DASHBOARD</h1>
-          <p class="page-subtitle">System Overview and Key Metrics</p>
-        </div>
-
-        <!-- Metrics Grid -->
-        <div class="dashboard-grid" id="metricsGrid">
-          <!-- Metrics will be populated dynamically -->
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="content-area">
-          <div class="content-header-bar">
-            <div class="content-title">RECENT ACTIVITY</div>
-          </div>
-          <div class="content-body">
-            <div id="recentActivity">
-              <!-- Recent activity will be populated dynamically -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Dynamic Content Area -->
-      <div id="dynamicContent" style="display: none;">
-        <!-- Content will be loaded dynamically -->
-      </div>
-    </main>
-
+    <script src="assets/js/nijjara-shell.js"></script>
     <script>
-      // Configuration
-      const LOGGING = true;
-      const PARTICLE_COUNT = 150;
-      const CONNECTION_DISTANCE = 100;
-      const MOUSE_RADIUS = 200;
-      const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+      const user = JSON.parse(sessionStorage.getItem("user") || "{}");
 
-      // Global variables
-      let currentUser = null;
-      let bootstrapData = null;
-      let currentView = null;
-
-      // DOM Elements
-      const menuToggle = document.getElementById('menuToggle');
-      const sidebar = document.getElementById('sidebar');
-      const sidebarOverlay = document.getElementById('sidebarOverlay');
-      const navMenu = document.getElementById('navMenu');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const dashboardContent = document.getElementById('dashboardContent');
-      const dynamicContent = document.getElementById('dynamicContent');
-      const metricsGrid = document.getElementById('metricsGrid');
-      const recentActivity = document.getElementById('recentActivity');
-
-      // --- CANVAS SETUP ---
-      const canvas = document.getElementById("quantum-canvas");
-      const ctx = canvas.getContext("2d");
-      let width, height;
-      let particles = [];
-      let mouse = { x: null, y: null };
-
-      function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width;
-        canvas.height = height;
+      function navigateModule(moduleId) {
+        sessionStorage.setItem("flashMessage", `جارٍ تحميل وحدة ${moduleId}`);
+        sessionStorage.setItem("flashType", "info");
+        window.location.href = `DynamicModule.html?moduleId=${moduleId}`;
       }
-      window.addEventListener("resize", resize);
-      resize();
 
-      window.addEventListener("mousemove", (e) => {
-        mouse.x = e.x;
-        mouse.y = e.y;
+      function quickAction(message) {
+        NijjaraShell.showToast(message, "info");
+      }
+
+      function showFlashToast() {
+        const flashMessage = sessionStorage.getItem("flashMessage");
+        if (flashMessage) {
+          const flashType = sessionStorage.getItem("flashType") || "success";
+          NijjaraShell.showToast(flashMessage, flashType);
+          sessionStorage.removeItem("flashMessage");
+          sessionStorage.removeItem("flashType");
+        }
+      }
+
+      function handleLogout() {
+        sessionStorage.clear();
+        NijjaraShell.showToast("تم تسجيل الخروج", "info");
+        setTimeout(() => window.location.reload(), 600);
+      }
+
+      function arrangeWindows(mode) {
+        const windows = document.querySelectorAll(".dashboard-window");
+        if (mode === "grid") {
+          const cols = Math.ceil(Math.sqrt(windows.length));
+          const rows = Math.ceil(windows.length / cols);
+          const winWidth = window.innerWidth / cols;
+          const winHeight = (window.innerHeight - 200) / rows;
+          windows.forEach((win, index) => {
+            win.style.position = "absolute";
+            win.style.top = `${120 + Math.floor(index / cols) * winHeight}px`;
+            win.style.left = `${Math.floor(index % cols) * winWidth}px`;
+            win.style.width = `${winWidth}px`;
+            win.style.height = `${winHeight}px`;
+            win.dataset.arranged = "true";
+          });
+        } else if (mode === "cascade") {
+          windows.forEach((win, index) => {
+            win.style.position = "absolute";
+            win.style.top = `${140 + index * 40}px`;
+            win.style.left = `${60 + index * 60}px`;
+            win.style.width = "640px";
+            win.style.height = "420px";
+            win.dataset.arranged = "true";
+          });
+        } else if (mode === "minimize") {
+          windows.forEach((win) => (win.style.display = "none"));
+        } else if (mode === "expand") {
+          windows.forEach((win) => {
+            win.style.display = "block";
+            if (win.dataset.arranged) {
+              win.style.position = "";
+              win.style.top = "";
+              win.style.left = "";
+              win.style.width = "";
+              win.style.height = "";
+              delete win.dataset.arranged;
+            }
+          });
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        NijjaraShell.init();
+        document.getElementById("nijjara-os").style.display = "block";
+
+        if (user.name) {
+          document.getElementById(
+            "user-info"
+          ).textContent = `USER: ${user.name}`;
+        }
+
+        document.querySelectorAll(".dashboard-window").forEach((win) => {
+          NijjaraShell.registerWindow(win);
+        });
+
+        showFlashToast();
       });
 
-      class Particle {
-        constructor() {
-          this.x = Math.random() * width;
-          this.y = Math.random() * height;
-          this.z = Math.random() * 2 + 0.5;
-          this.vx = (Math.random() - 0.5) * 0.5;
-          this.vy = (Math.random() - 0.5) * 0.5;
-          this.size = Math.random() * 2 + 1;
-          this.color =
-            Math.random() > 0.5 ? "rgba(0, 243, 255," : "rgba(188, 19, 254,";
-        }
-
-        update() {
-          this.x += this.vx * this.z;
-          this.y += this.vy * this.z;
-
-          if (mouse.x != null) {
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < MOUSE_RADIUS) {
-              const forceDirectionX = dx / distance;
-              const forceDirectionY = dy / distance;
-              const force = (MOUSE_RADIUS - distance) / MOUSE_RADIUS;
-              this.x += forceDirectionX * force * 2 * -1;
-              this.y += forceDirectionY * force * 2 * -1;
-            }
-          }
-
-          if (this.x > width) this.x = 0;
-          if (this.x < 0) this.x = width;
-          if (this.y > height) this.y = 0;
-          if (this.y < 0) this.y = height;
-        }
-
-        draw() {
-          ctx.beginPath();
-          let alpha = (this.z / 2.5) * 0.8;
-          ctx.fillStyle = this.color + alpha + ")";
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-
-      function initParticles() {
-        particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-          particles.push(new Particle());
-        }
-      }
-
-      function drawLines() {
-        let opacityValue = 1;
-        for (let a = 0; a < particles.length; a++) {
-          for (let b = a; b < particles.length; b++) {
-            let distance =
-              (particles[a].x - particles[b].x) *
-                (particles[a].x - particles[b].x) +
-              (particles[a].y - particles[b].y) *
-                (particles[a].y - particles[b].y);
-
-            if (distance < CONNECTION_DISTANCE * CONNECTION_DISTANCE) {
-              opacityValue = 1 - distance / 20000;
-              ctx.strokeStyle = "rgba(0, 243, 255," + opacityValue * 0.2 + ")";
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.moveTo(particles[a].x, particles[a].y);
-              ctx.lineTo(particles[b].x, particles[b].y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-
-      function animate() {
-        ctx.fillStyle = "rgba(5, 5, 16, 0.5)";
-        ctx.fillRect(0, 0, width, height);
-
-        for (let i = 0; i < particles.length; i++) {
-          particles[i].update();
-          particles[i].draw();
-        }
-        drawLines();
-        requestAnimationFrame(animate);
-      }
-
-      // Initialize
-      document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
-        setupEventListeners();
-        initParticles();
-        animate();
+      window.addEventListener("dock-action", (evt) => {
+        arrangeWindows(evt.detail);
       });
 
-      async function initializeApp() {
-        try {
-          const sessionToken = localStorage.getItem('erp_session_token');
-          if (!sessionToken) {
-            window.location.href = 'Login.html';
-            return;
-          }
-
-          currentUser = JSON.parse(localStorage.getItem('erp_user') || '{}');
-          bootstrapData = JSON.parse(localStorage.getItem('erp_bootstrap') || '{}');
-
-          updateUserInfo();
-          buildNavigationMenu();
-          await loadDashboardData();
-          await validateSession(sessionToken);
-
-        } catch (error) {
-          console.error('Initialization error:', error);
-          showError('System initialization error');
-          window.location.href = 'Login.html';
-        }
-      }
-
-      function setupEventListeners() {
-        menuToggle.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
-        logoutBtn.addEventListener('click', handleLogout);
-
-        navMenu.addEventListener('click', function(e) {
-          if (e.target.classList.contains('nav-link')) {
-            closeSidebar();
-          }
-        });
-      }
-
-      function updateUserInfo() {
-        const userNameElement = document.getElementById('userName');
-        const userAvatar = document.getElementById('userAvatar');
-
-        if (currentUser && currentUser.name) {
-          userNameElement.textContent = currentUser.name;
-          userAvatar.innerHTML = '<i class="fas fa-user"></i>';
-        }
-      }
-
-      function buildNavigationMenu() {
-        if (!bootstrapData || !bootstrapData.navigation) return;
-
-        const menuHtml = bootstrapData.navigation.map(module => {
-          let html = `
-            <li class="nav-item">
-              <a href="#" class="nav-link" data-module="${module.id}">
-                <i class="fas fa-${getModuleIcon(module.id)}"></i>
-                ${module.label}
-              </a>
-          `;
-
-          if (module.children && module.children.length > 0) {
-            html += '<ul class="nav-submenu">';
-            module.children.forEach(child => {
-              html += `
-                <li>
-                  <a href="#" class="nav-link" data-view="${child.view}" data-module="${module.id}">
-                    ${child.label}
-                  </a>
-                </li>
-              `;
-            });
-            html += '</ul>';
-          }
-
-          html += '</li>';
-          return html;
-        }).join('');
-
-        navMenu.innerHTML = menuHtml;
-
-        document.querySelectorAll('.nav-link').forEach(link => {
-          link.addEventListener('click', handleNavigation);
-        });
-      }
-
-      function getModuleIcon(moduleId) {
-        const icons = {
-          'dashboard': 'tachometer-alt',
-          'hr': 'users',
-          'projects': 'folder',
-          'finance': 'dollar-sign',
-          'system': 'cogs'
-        };
-        return icons[moduleId] || 'circle';
-      }
-
-      function handleNavigation(e) {
-        e.preventDefault();
-        const link = e.currentTarget;
-        const viewId = link.getAttribute('data-view');
-        const moduleId = link.getAttribute('data-module');
-
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-
-        if (viewId) {
-          loadView(viewId, moduleId);
-        } else if (moduleId === 'dashboard') {
-          showDashboard();
-        }
-      }
-
-      async function loadDashboardData() {
-        try {
-          setLoading(true);
-
-          const response = await apiCall('get_dashboard_data', {
-            session_token: localStorage.getItem('erp_session_token'),
-            module: 'overview'
-          });
-
-          if (response.success) {
-            renderDashboardMetrics(response.data);
-            renderRecentActivity(response.data);
-          }
-
-        } catch (error) {
-          console.error('Dashboard load error:', error);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      function renderDashboardMetrics(data) {
-        if (!data.metrics) return;
-
-        const metricsHtml = data.metrics.map(metric => {
-          const changeClass = metric.change.includes('+') ? 'positive' : 'negative';
-          const iconClass = getMetricIcon(metric.label);
-
-          return `
-            <div class="metric-card">
-              <div class="metric-header">
-                <div class="metric-icon ${iconClass}">
-                  <i class="fas fa-${getMetricIconName(metric.label)}"></i>
-                </div>
-                <span class="metric-change ${changeClass}">${metric.change}</span>
-              </div>
-              <div class="metric-value">${metric.value}</div>
-              <div class="metric-label">${metric.label}</div>
-            </div>
-          `;
-        }).join('');
-
-        metricsGrid.innerHTML = metricsHtml;
-      }
-
-      function getMetricIcon(label) {
-        if (label.includes('Employee') || label.includes('User')) return 'users';
-        if (label.includes('Project')) return 'projects';
-        if (label.includes('Revenue') || label.includes('Finance')) return 'finance';
-        return 'system';
-      }
-
-      function getMetricIconName(label) {
-        if (label.includes('Employee') || label.includes('User')) return 'users';
-        if (label.includes('Project')) return 'folder-open';
-        if (label.includes('Revenue') || label.includes('Finance')) return 'dollar-sign';
-        return 'chart-line';
-      }
-
-      function renderRecentActivity(data) {
-        if (!data.recent_activity) return;
-
-        const activityHtml = data.recent_activity.map(activity => `
-          <div style="padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 600; color: white;">${activity.action}</div>
-              <div style="font-size: 14px; color: rgba(255, 255, 255, 0.6);">${activity.user}</div>
-            </div>
-            <div style="font-size: 12px; color: rgba(255, 255, 255, 0.5);">${activity.time}</div>
-          </div>
-        `).join('');
-
-        recentActivity.innerHTML = activityHtml || '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No recent activity</h3></div>';
-      }
-
-      async function loadView(viewId, moduleId) {
-        try {
-          setLoading(true);
-
-          const response = await apiCall('get_view', {
-            session_token: localStorage.getItem('erp_session_token'),
-            view_id: viewId
-          });
-
-          if (response.success) {
-            currentView = viewId;
-            renderView(viewId, response.data, moduleId);
-          }
-
-        } catch (error) {
-          console.error('View load error:', error);
-          showError('Error loading data');
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      function renderView(viewId, data, moduleId) {
-        dashboardContent.style.display = 'none';
-        dynamicContent.style.display = 'block';
-
-        const viewConfig = bootstrapData.views.find(v => v.VIEW_ID === viewId);
-        if (!viewConfig) return;
-
-        let contentHtml = `
-          <div class="content-header">
-            <h1 class="page-title">${viewConfig.View_Title}</h1>
-            <p class="page-subtitle">Manage ${viewConfig.View_Title.toLowerCase()}</p>
-          </div>
-          <div class="content-area">
-            <div class="content-header-bar">
-              <div class="content-title">${viewConfig.View_Title}</div>
-              <div class="content-actions">
-                <button class="action-btn primary" onclick="handleAddNew('${viewId}')">
-                  <i class="fas fa-plus"></i>
-                  Add New
-                </button>
-                <button class="action-btn" onclick="refreshView()">
-                  <i class="fas fa-sync-alt"></i>
-                  Refresh
-                </button>
-              </div>
-            </div>
-            <div class="content-body">
-        `;
-
-        if (data.records && data.records.length > 0) {
-          const columns = viewConfig.Source_Columns.split(',');
-          contentHtml += '<table class="data-table"><thead><tr>';
-
-          columns.forEach(col => {
-            contentHtml += `<th>${getColumnLabel(col.trim())}</th>`;
-          });
-
-          contentHtml += '<th>Actions</th></tr></thead><tbody>';
-
-          data.records.forEach(record => {
-            contentHtml += '<tr>';
-            columns.forEach(col => {
-              const value = record[col.trim()] || '';
-              contentHtml += `<td>${value}</td>`;
-            });
-            contentHtml += `
-              <td>
-                <button class="action-btn" onclick="handleEdit('${record.EMP_ID || record.id}')">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn" onclick="handleView('${record.EMP_ID || record.id}')">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </td>
-            </tr>`;
-          });
-
-          contentHtml += '</tbody></table>';
-        } else {
-          contentHtml += '<div class="empty-state"><i class="fas fa-database"></i><h3>No data</h3><p>Start by adding a new record</p></div>';
-        }
-
-        contentHtml += '</div></div>';
-
-        dynamicContent.innerHTML = contentHtml;
-      }
-
-      function getColumnLabel(columnName) {
-        const labels = {
-          'EMP_ID': 'Employee ID',
-          'EMP_Name_AR': 'Employee Name',
-          'Job_Title': 'Job Title',
-          'DEPT_Name': 'Department',
-          'EMP_Status': 'Status'
-        };
-        return labels[columnName] || columnName;
-      }
-
-      function showDashboard() {
-        dashboardContent.style.display = 'block';
-        dynamicContent.style.display = 'none';
-        currentView = null;
-      }
-
-      async function handleLogout() {
-        try {
-          const sessionToken = localStorage.getItem('erp_session_token');
-          await apiCall('logout', {
-            session_token: sessionToken
-          });
-        } catch (error) {
-          console.error('Logout error:', error);
-        } finally {
-          localStorage.removeItem('erp_session_token');
-          localStorage.removeItem('erp_user');
-          localStorage.removeItem('erp_bootstrap');
-          window.location.href = 'Login.html';
-        }
-      }
-
-      async function validateSession(token) {
-        try {
-          const response = await apiCall('validate_session', {
-            session_token: token
-          });
-
-          if (!response.success) {
-            handleLogout();
-          }
-        } catch (error) {
-          console.error('Session validation error:', error);
-          handleLogout();
-        }
-      }
-
-      async function apiCall(action, data) {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: action,
-            data: data
-          })
-        });
-
-        return await response.json();
-      }
-
-      function toggleSidebar() {
-        sidebar.classList.toggle('open');
-        sidebarOverlay.classList.toggle('show');
-      }
-
-      function closeSidebar() {
-        sidebar.classList.remove('open');
-        sidebarOverlay.classList.remove('show');
-      }
-
-      function setLoading(loading) {
-        loadingOverlay.style.display = loading ? 'flex' : 'none';
-      }
-
-      function showError(message) {
-        alert(message);
-      }
-
-      window.handleAddNew = function(viewId) {
-        alert('Add new form will open');
-      };
-
-      window.handleEdit = function(id) {
-        alert(`Edit record: ${id}`);
-      };
-
-      window.handleView = function(id) {
-        alert(`View record: ${id}`);
-      };
-
-      window.refreshView = function() {
-        if (currentView) {
-          loadView(currentView, null);
-        }
-      };
+      console.log("[DASHBOARD] Ready", user);
     </script>
   </body>
 </html>

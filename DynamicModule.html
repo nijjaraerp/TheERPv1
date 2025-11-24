@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموارد - وحدة ديناميكية</title>
+    <style>
+        /* Dynamic Module Styles */
+        .dynamic-module-container {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .module-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .module-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .module-description {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .module-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .module-nav-item {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .module-nav-item:hover {
+            background: rgba(74, 144, 226, 0.2);
+            border-color: #4a90e2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .module-nav-item.active {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            border-color: #4a90e2;
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .module-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .module-component {
+            margin-bottom: 30px;
+        }
+
+        .module-component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .module-component-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .module-component-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .module-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .module-btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .module-btn-primary:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2968a3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .module-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .module-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .module-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .module-stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .module-stat-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+
+        .module-stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .module-loading {
+            text-align: center;
+            padding: 60px;
+            color: #ffffff;
+        }
+
+        .module-loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #4a90e2;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .module-error {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #ff6b6b;
+            text-align: center;
+        }
+
+        .module-success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #4caf50;
+            text-align: center;
+        }
+
+        .module-empty {
+            text-align: center;
+            padding: 60px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .module-card-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .module-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dynamic-module-container {
+                padding: 10px;
+            }
+            
+            .module-navigation {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .module-nav-item {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .module-content {
+                padding: 20px;
+            }
+            
+            .module-component-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .module-component-actions {
+                justify-content: center;
+            }
+            
+            .module-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="dynamicModuleContainer" class="dynamic-module-container">
+        <!-- Module will be dynamically loaded here -->
+        <div class="module-loading">
+            <div class="module-loading-spinner"></div>
+            <p>جاري تحميل الوحدة...</p>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic Module JavaScript
+        class DynamicModule {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.moduleConfig = null;
+                this.moduleData = {};
+                this.currentComponent = null;
+                this.activeNavItem = null;
+            }
+
+            /**
+             * Initialize the dynamic module
+             */
+            async initialize(moduleId, context = {}) {
+                try {
+                    this.showLoading();
+                    
+                    // Load module configuration from server
+                    const response = await this.loadModuleConfiguration(moduleId, context);
+                    if (!response.success) {
+                        throw new Error(response.error || 'Failed to load module configuration');
+                    }
+                    
+                    this.moduleConfig = response.module;
+                    this.moduleData = response.data || {};
+                    
+                    // Render the module
+                    this.renderModule();
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    console.log('Dynamic module initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize dynamic module:', error);
+                    this.showError('فشل في تحميل الوحدة: ' + error.message);
+                }
+            }
+
+            /**
+             * Load module configuration from server
+             */
+            async loadModuleConfiguration(moduleId, context) {
+                return new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        .getModuleInfo(moduleId);
+                });
+            }
+
+            /**
+             * Render the complete module
+             */
+            renderModule() {
+                if (!this.moduleConfig) {
+                    throw new Error('Module configuration not loaded');
+                }
+
+                const html = `
+                    <div class="module-header">
+                        <h2 class="module-title">${this.escapeHtml(this.moduleConfig.name || 'وحدة ديناميكية')}</h2>
+                        <p class="module-description">${this.escapeHtml(this.moduleConfig.description || '')}</p>
+                    </div>
+                    
+                    ${this.renderModuleNavigation()}
+                    
+                    <div class="module-content" id="moduleContent">
+                        ${this.renderModuleDashboard()}
+                    </div>
+                `;
+
+                this.container.innerHTML = html;
+            }
+
+            /**
+             * Render module navigation
+             */
+            renderModuleNavigation() {
+                if (!this.moduleConfig.components || this.moduleConfig.components.length === 0) {
+                    return '';
+                }
+
+                const navItems = this.moduleConfig.components.map(component => `
+                    <div class="module-nav-item" data-component-id="${component.id}" data-component-type="${component.type}">
+                        ${this.escapeHtml(component.name || component.id)}
+                    </div>
+                `).join('');
+
+                return `<div class="module-navigation">${navItems}</div>`;
+            }
+
+            /**
+             * Render module dashboard
+             */
+            renderModuleDashboard() {
+                return `
+                    <div class="module-component">
+                        <div class="module-component-header">
+                            <h3 class="module-component-title">لوحة المعلومات</h3>
+                        </div>
+                        
+                        ${this.renderModuleStats()}
+                        
+                        <div class="module-grid">
+                            ${this.renderModuleComponents()}
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Render module statistics
+             */
+            renderModuleStats() {
+                const stats = this.moduleData.stats || [
+                    { label: 'إجمالي السجلات', value: '0' },
+                    { label: 'نشط', value: '0' },
+                    { label: 'غير نشط', value: '0' },
+                    { label: 'جديد هذا الشهر', value: '0' }
+                ];
+
+                const statsHtml = stats.map(stat => `
+                    <div class="module-stat-card">
+                        <div class="module-stat-value">${this.escapeHtml(String(stat.value))}</div>
+                        <div class="module-stat-label">${this.escapeHtml(stat.label)}</div>
+                    </div>
+                `).join('');
+
+                return `<div class="module-stats">${statsHtml}</div>`;
+            }
+
+            /**
+             * Render module components
+             */
+            renderModuleComponents() {
+                if (!this.moduleConfig.components || this.moduleConfig.components.length === 0) {
+                    return '<div class="module-empty">لا توجد مكونات متاحة</div>';
+                }
+
+                const componentsHtml = this.moduleConfig.components.map(component => `
+                    <div class="module-card">
+                        <div class="module-card-title">${this.escapeHtml(component.name || component.id)}</div>
+                        <div class="module-card-description">${this.escapeHtml(component.description || '')}</div>
+                        <div class="module-card-actions">
+                            <button type="button" class="module-btn module-btn-primary" 
+                                    data-component-id="${component.id}" 
+                                    data-action="open">
+                                فتح
+                            </button>
+                            ${component.type === 'form' ? `
+                                <button type="button" class="module-btn module-btn-secondary" 
+                                        data-component-id="${component.id}" 
+                                        data-action="add">
+                                    إضافة
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+                return componentsHtml;
+            }
+
+            /**
+             * Render specific component
+             */
+            renderComponent(componentId) {
+                const component = this.moduleConfig.components.find(c => c.id === componentId);
+                if (!component) {
+                    this.showError('المكون غير موجود');
+                    return;
+                }
+
+                this.currentComponent = component;
+
+                let componentHtml = '';
+                
+                switch (component.type) {
+                    case 'form':
+                        componentHtml = this.renderFormComponent(component);
+                        break;
+                    case 'view':
+                        componentHtml = this.renderViewComponent(component);
+                        break;
+                    case 'dashboard':
+                        componentHtml = this.renderDashboardComponent(component);
+                        break;
+                    default:
+                        componentHtml = this.renderGenericComponent(component);
+                }
+
+                document.getElementById('moduleContent').innerHTML = componentHtml;
+                this.setupComponentEventListeners();
+            }
+
+            /**
+             * Render form component
+             */
+            renderFormComponent(component) {
+                return `
+                    <div class="module-component">
+                        <div class="module-component-header">
+                            <h3 class="module-component-title">${this.escapeHtml(component.name)}</h3>
+                            <div class="module-component-actions">
+                                <button type="button" class="module-btn module-btn-secondary" id="backToDashboardBtn">
+                                    رجوع
+                                </button>
+                            </div>
+                        </div>
+                        <div id="formContainer">
+                            <iframe src="DynamicForm.html?formId=${component.id}" 
+                                    width="100%" 
+                                    height="600" 
+                                    frameborder="0"
+                                    style="border-radius: 12px; background: transparent;">
+                            </iframe>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Render view component
+             */
+            renderViewComponent(component) {
+                return `
+                    <div class="module-component">
+                        <div class="module-component-header">
+                            <h3 class="module-component-title">${this.escapeHtml(component.name)}</h3>
+                            <div class="module-component-actions">
+                                <button type="button" class="module-btn module-btn-secondary" id="backToDashboardBtn">
+                                    رجوع
+                                </button>
+                            </div>
+                        </div>
+                        <div id="viewContainer">
+                            <iframe src="DynamicView.html?viewId=${component.id}" 
+                                    width="100%" 
+                                    height="600" 
+                                    frameborder="0"
+                                    style="border-radius: 12px; background: transparent;">
+                            </iframe>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Render dashboard component
+             */
+            renderDashboardComponent(component) {
+                return `
+                    <div class="module-component">
+                        <div class="module-component-header">
+                            <h3 class="module-component-title">${this.escapeHtml(component.name)}</h3>
+                            <div class="module-component-actions">
+                                <button type="button" class="module-btn module-btn-secondary" id="backToDashboardBtn">
+                                    رجوع
+                                </button>
+                            </div>
+                        </div>
+                        <div class="module-stats">
+                            <div class="module-stat-card">
+                                <div class="module-stat-value">${this.escapeHtml(String(component.stats?.total || 0))}</div>
+                                <div class="module-stat-label">إجمالي</div>
+                            </div>
+                            <div class="module-stat-card">
+                                <div class="module-stat-value">${this.escapeHtml(String(component.stats?.active || 0))}</div>
+                                <div class="module-stat-label">نشط</div>
+                            </div>
+                            <div class="module-stat-card">
+                                <div class="module-stat-value">${this.escapeHtml(String(component.stats?.pending || 0))}</div>
+                                <div class="module-stat-label">قيد الانتظار</div>
+                            </div>
+                        </div>
+                        <div class="module-grid">
+                            ${component.widgets ? component.widgets.map(widget => `
+                                <div class="module-card">
+                                    <div class="module-card-title">${this.escapeHtml(widget.title)}</div>
+                                    <div class="module-card-description">${this.escapeHtml(widget.description || '')}</div>
+                                    <div class="module-card-actions">
+                                        <button type="button" class="module-btn module-btn-primary" data-widget-id="${widget.id}">
+                                            عرض
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('') : '<div class="module-empty">لا توجد عناصر واجهة متاحة</div>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Render generic component
+             */
+            renderGenericComponent(component) {
+                return `
+                    <div class="module-component">
+                        <div class="module-component-header">
+                            <h3 class="module-component-title">${this.escapeHtml(component.name)}</h3>
+                            <div class="module-component-actions">
+                                <button type="button" class="module-btn module-btn-secondary" id="backToDashboardBtn">
+                                    رجوع
+                                </button>
+                            </div>
+                        </div>
+                        <div class="module-empty">
+                            <p>نوع المكون "${component.type}" غير مدعوم حالياً</p>
+                            <p>الاسم: ${this.escapeHtml(component.name)}</p>
+                            <p>الوصف: ${this.escapeHtml(component.description || 'غير متاح')}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Setup event listeners
+             */
+            setupEventListeners() {
+                // Navigation items
+                document.querySelectorAll('.module-nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const componentId = e.target.dataset.componentId;
+                        this.navigateToComponent(componentId);
+                    });
+                });
+            }
+
+            /**
+             * Setup component-specific event listeners
+             */
+            setupComponentEventListeners() {
+                // Back to dashboard button
+                const backBtn = document.getElementById('backToDashboardBtn');
+                if (backBtn) {
+                    backBtn.addEventListener('click', () => {
+                        this.navigateToDashboard();
+                    });
+                }
+
+                // Component action buttons
+                document.querySelectorAll('[data-action="open"], [data-action="add"]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const componentId = e.target.dataset.componentId;
+                        const action = e.target.dataset.action;
+                        
+                        if (action === 'open') {
+                            this.renderComponent(componentId);
+                        } else if (action === 'add') {
+                            this.openAddForm(componentId);
+                        }
+                    });
+                });
+            }
+
+            /**
+             * Navigate to component
+             */
+            navigateToComponent(componentId) {
+                // Update navigation active state
+                document.querySelectorAll('.module-nav-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.componentId === componentId);
+                });
+
+                this.renderComponent(componentId);
+            }
+
+            /**
+             * Navigate to dashboard
+             */
+            navigateToDashboard() {
+                // Update navigation active state
+                document.querySelectorAll('.module-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                this.currentComponent = null;
+                document.getElementById('moduleContent').innerHTML = this.renderModuleDashboard();
+                this.setupComponentEventListeners();
+            }
+
+            /**
+             * Open add form for component
+             */
+            openAddForm(componentId) {
+                // TODO: Implement add form logic
+                console.log('Open add form for component:', componentId);
+            }
+
+            /**
+             * Show loading state
+             */
+            showLoading(message = 'جاري التحميل...') {
+                this.container.innerHTML = `
+                    <div class="module-loading">
+                        <div class="module-loading-spinner"></div>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+
+            /**
+             * Show error message
+             */
+            showError(message) {
+                const errorHtml = `<div class="module-error">${message}</div>`;
+                const existingError = this.container.querySelector('.module-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                this.container.insertAdjacentHTML('afterbegin', errorHtml);
+            }
+
+            /**
+             * Show success message
+             */
+            showSuccess(message) {
+                const successHtml = `<div class="module-success">${message}</div>`;
+                const existingSuccess = this.container.querySelector('.module-success');
+                if (existingSuccess) {
+                    existingSuccess.remove();
+                }
+                this.container.insertAdjacentHTML('afterbegin', successHtml);
+            }
+
+            /**
+             * Escape HTML to prevent XSS
+             */
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize dynamic module when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get module ID from URL parameters or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const moduleId = urlParams.get('moduleId') || 'HRM';
+            
+            const dynamicModule = new DynamicModule('dynamicModuleContainer');
+            dynamicModule.initialize(moduleId);
+        });
+    </script>
+</body>
+</html>

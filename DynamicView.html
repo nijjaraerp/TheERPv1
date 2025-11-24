@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموارد - عرض ديناميكي</title>
+    <style>
+        /* Dynamic View Styles */
+        .dynamic-view-container {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .view-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .view-btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .view-btn-primary:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2968a3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .view-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .view-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .view-filters {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-filters-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+
+        .view-filter-field {
+            flex: 1;
+        }
+
+        .view-filter-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .view-filter-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .view-filter-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .view-data-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .view-data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .view-data-table th {
+            background: rgba(74, 144, 226, 0.3);
+            color: #ffffff;
+            padding: 15px 10px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-data-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .view-data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .view-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .view-page-btn {
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            font-size: 12px;
+        }
+
+        .view-page-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .view-page-btn.active {
+            background: #4a90e2;
+            border-color: #4a90e2;
+        }
+
+        .view-page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .view-page-info {
+            color: #ffffff;
+            font-size: 12px;
+            margin: 0 10px;
+        }
+
+        .view-loading {
+            text-align: center;
+            padding: 60px;
+            color: #ffffff;
+        }
+
+        .view-loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #4a90e2;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .view-error {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            color: #ff6b6b;
+            text-align: center;
+        }
+
+        .view-empty {
+            text-align: center;
+            padding: 60px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .view-data-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .view-data-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-data-btn-view {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .view-data-btn-edit {
+            background: #f39c12;
+            color: white;
+        }
+
+        .view-data-btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .view-data-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dynamic-view-container {
+                padding: 10px;
+            }
+            
+            .view-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .view-filters-row {
+                flex-direction: column;
+            }
+            
+            .view-data-table {
+                font-size: 12px;
+            }
+            
+            .view-data-table th,
+            .view-data-table td {
+                padding: 8px 5px;
+            }
+            
+            .view-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Scrollable table for mobile */
+        @media (max-width: 480px) {
+            .view-data-container {
+                overflow-x: auto;
+            }
+            
+            .view-data-table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="dynamicViewContainer" class="dynamic-view-container">
+        <!-- View will be dynamically loaded here -->
+        <div class="view-loading">
+            <div class="view-loading-spinner"></div>
+            <p>جاري تحميل البيانات...</p>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic View JavaScript
+        class DynamicView {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.viewConfig = null;
+                this.viewData = [];
+                this.pagination = {
+                    currentPage: 1,
+                    pageSize: 50,
+                    totalPages: 0,
+                    totalRecords: 0
+                };
+                this.filters = {};
+                this.sortConfig = {
+                    field: null,
+                    direction: 'asc'
+                };
+            }
+
+            /**
+             * Initialize the dynamic view
+             */
+            async initialize(viewId, context = {}) {
+                try {
+                    this.showLoading();
+                    
+                    // Load view configuration from server
+                    const response = await this.loadViewConfiguration(viewId, context);
+                    if (!response.success) {
+                        throw new Error(response.error || 'Failed to load view configuration');
+                    }
+                    
+                    this.viewConfig = response.view.config;
+                    this.viewData = response.view.data || [];
+                    
+                    // Update pagination if provided
+                    if (response.pagination) {
+                        this.pagination = { ...this.pagination, ...response.pagination };
+                    }
+                    
+                    // Render the view
+                    this.renderView();
+                    
+                    // Setup event listeners
+                    this.setupEventListeners();
+                    
+                    console.log('Dynamic view initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize dynamic view:', error);
+                    this.showError('فشل في تحميل البيانات: ' + error.message);
+                }
+            }
+
+            /**
+             * Load view configuration from server
+             */
+            async loadViewConfiguration(viewId, context) {
+                return new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        .generateDynamicView(viewId, context);
+                });
+            }
+
+            /**
+             * Load view data with pagination and filters
+             */
+            async loadViewData(page = 1, filters = {}) {
+                try {
+                    const pagination = {
+                        page: page,
+                        pageSize: this.pagination.pageSize
+                    };
+                    
+                    const response = await new Promise((resolve, reject) => {
+                        google.script.run
+                            .withSuccessHandler(resolve)
+                            .withFailureHandler(reject)
+                            .getDynamicViewData(this.viewConfig.id, pagination, filters, {});
+                    });
+                    
+                    if (response.success) {
+                        this.viewData = response.data || [];
+                        this.pagination = { ...this.pagination, ...response.pagination };
+                        this.renderDataTable();
+                        this.renderPagination();
+                    } else {
+                        throw new Error(response.error || 'Failed to load view data');
+                    }
+                } catch (error) {
+                    console.error('Failed to load view data:', error);
+                    this.showError('فشل في تحميل البيانات: ' + error.message);
+                }
+            }
+
+            /**
+             * Render the complete view
+             */
+            renderView() {
+                if (!this.viewConfig) {
+                    throw new Error('View configuration not loaded');
+                }
+
+                const html = `
+                    <div class="view-header">
+                        <h2 class="view-title">${this.escapeHtml(this.viewConfig.viewTitle || 'عرض ديناميكي')}</h2>
+                        <div class="view-actions">
+                            <button type="button" class="view-btn view-btn-primary" id="refreshBtn">
+                                تحديث
+                            </button>
+                            <button type="button" class="view-btn view-btn-secondary" id="exportBtn">
+                                تصدير
+                            </button>
+                            <button type="button" class="view-btn view-btn-secondary" id="filterToggleBtn">
+                                فلترة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    ${this.renderFilters()}
+                    
+                    <div class="view-data-container">
+                        ${this.renderDataTable()}
+                        ${this.renderPagination()}
+                    </div>
+                `;
+
+                this.container.innerHTML = html;
+            }
+
+            /**
+             * Render filters section
+             */
+            renderFilters() {
+                if (!this.viewConfig.filters || this.viewConfig.filters.length === 0) {
+                    return '';
+                }
+
+                const filtersHtml = this.viewConfig.filters.map((filter, index) => {
+                    if (index % 3 === 0) {
+                        const rowFilters = this.viewConfig.filters.slice(index, index + 3);
+                        return `
+                            <div class="view-filters-row">
+                                ${rowFilters.map(filter => this.renderFilterField(filter)).join('')}
+                            </div>
+                        `;
+                    }
+                    return '';
+                }).join('');
+
+                return `
+                    <div class="view-filters" id="filtersSection" style="display: none;">
+                        ${filtersHtml}
+                        <div class="view-filters-row">
+                            <div class="view-filter-field" style="flex: 0 0 auto;">
+                                <button type="button" class="view-btn view-btn-primary" id="applyFiltersBtn">
+                                    تطبيق الفلاتر
+                                </button>
+                            </div>
+                            <div class="view-filter-field" style="flex: 0 0 auto;">
+                                <button type="button" class="view-btn view-btn-secondary" id="clearFiltersBtn">
+                                    مسح الفلاتر
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Render individual filter field
+             */
+            renderFilterField(filter) {
+                let inputHtml = '';
+                
+                switch (filter.type) {
+                    case 'text':
+                        inputHtml = `<input type="text" id="filter_${filter.fieldId}" class="view-filter-input" placeholder="${this.escapeHtml(filter.placeholder || '')}">`;
+                        break;
+                    case 'select':
+                        const options = filter.options ? filter.options.map(opt => 
+                            `<option value="${this.escapeHtml(opt.value)}">${this.escapeHtml(opt.text)}</option>`
+                        ).join('') : '';
+                        inputHtml = `<select id="filter_${filter.fieldId}" class="view-filter-input"><option value="">-- الكل --</option>${options}</select>`;
+                        break;
+                    case 'date':
+                        inputHtml = `<input type="date" id="filter_${filter.fieldId}" class="view-filter-input">`;
+                        break;
+                    case 'number':
+                        inputHtml = `<input type="number" id="filter_${filter.fieldId}" class="view-filter-input" placeholder="${this.escapeHtml(filter.placeholder || '')}">`;
+                        break;
+                    default:
+                        inputHtml = `<input type="text" id="filter_${filter.fieldId}" class="view-filter-input" placeholder="${this.escapeHtml(filter.placeholder || '')}">`;
+                }
+
+                return `
+                    <div class="view-filter-field">
+                        <label for="filter_${filter.fieldId}" class="view-filter-label">
+                            ${this.escapeHtml(filter.label || filter.fieldId)}
+                        </label>
+                        ${inputHtml}
+                    </div>
+                `;
+            }
+
+            /**
+             * Render data table
+             */
+            renderDataTable() {
+                if (!this.viewData || this.viewData.length === 0) {
+                    return '<div class="view-empty">لا توجد بيانات لعرضها</div>';
+                }
+
+                const columns = this.viewConfig.sourceColumns || Object.keys(this.viewData[0]);
+                
+                const headersHtml = columns.map(col => {
+                    const columnConfig = this.viewConfig.columns?.find(c => c.fieldId === col) || {};
+                    const header = columnConfig.header || col;
+                    const sortable = columnConfig.sortable !== false;
+                    
+                    return `
+                        <th ${sortable ? `class="sortable" data-field="${col}"` : ''}>
+                            ${this.escapeHtml(header)}
+                            ${sortable ? '<span class="sort-indicator">↕</span>' : ''}
+                        </th>
+                    `;
+                }).join('');
+
+                // Add actions column if configured
+                const hasActions = this.viewConfig.actions && this.viewConfig.actions.length > 0;
+                const actionsHeader = hasActions ? '<th>إجراءات</th>' : '';
+
+                const rowsHtml = this.viewData.map((row, rowIndex) => {
+                    const cellsHtml = columns.map(col => {
+                        const value = row[col] || '';
+                        const columnConfig = this.viewConfig.columns?.find(c => c.fieldId === col) || {};
+                        
+                        // Apply formatting if configured
+                        let displayValue = this.escapeHtml(String(value));
+                        if (columnConfig.formatter) {
+                            displayValue = this.applyFormatter(value, columnConfig.formatter);
+                        }
+                        
+                        return `<td>${displayValue}</td>`;
+                    }).join('');
+
+                    // Add actions cell if configured
+                    const actionsCell = hasActions ? `
+                        <td>
+                            <div class="view-data-actions">
+                                ${this.viewConfig.actions.map(action => `
+                                    <button type="button" class="view-data-btn view-data-btn-${action.type}" 
+                                            data-action="${action.action}" 
+                                            data-row-index="${rowIndex}"
+                                            title="${this.escapeHtml(action.label)}">
+                                        ${this.escapeHtml(action.label)}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </td>
+                    ` : '';
+
+                    return `<tr>${cellsHtml}${actionsCell}</tr>`;
+                }).join('');
+
+                return `
+                    <table class="view-data-table">
+                        <thead>
+                            <tr>${headersHtml}${actionsHeader}</tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml || '<tr><td colspan="' + (columns.length + (hasActions ? 1 : 0)) + '" class="view-empty">لا توجد بيانات</td></tr>'}
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            /**
+             * Render pagination
+             */
+            renderPagination() {
+                if (this.pagination.totalPages <= 1) {
+                    return '';
+                }
+
+                const currentPage = this.pagination.currentPage;
+                const totalPages = this.pagination.totalPages;
+                
+                // Calculate page range
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+
+                const pagesHtml = [];
+                
+                // Previous button
+                pagesHtml.push(`
+                    <button type="button" class="view-page-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>
+                        السابق
+                    </button>
+                `);
+
+                // First page
+                if (startPage > 1) {
+                    pagesHtml.push(`<button type="button" class="view-page-btn" data-page="1">1</button>`);
+                    if (startPage > 2) {
+                        pagesHtml.push(`<span class="view-page-info">...</span>`);
+                    }
+                }
+
+                // Page numbers
+                for (let i = startPage; i <= endPage; i++) {
+                    pagesHtml.push(`
+                        <button type="button" class="view-page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">
+                            ${i}
+                        </button>
+                    `);
+                }
+
+                // Last page
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pagesHtml.push(`<span class="view-page-info">...</span>`);
+                    }
+                    pagesHtml.push(`<button type="button" class="view-page-btn" data-page="${totalPages}">${totalPages}</button>`);
+                }
+
+                // Next button
+                pagesHtml.push(`
+                    <button type="button" class="view-page-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>
+                        التالي
+                    </button>
+                `);
+
+                return `
+                    <div class="view-pagination">
+                        ${pagesHtml.join('')}
+                    </div>
+                `;
+            }
+
+            /**
+             * Setup event listeners
+             */
+            setupEventListeners() {
+                // Refresh button
+                const refreshBtn = document.getElementById('refreshBtn');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', () => {
+                        this.loadViewData(this.pagination.currentPage, this.filters);
+                    });
+                }
+
+                // Export button
+                const exportBtn = document.getElementById('exportBtn');
+                if (exportBtn) {
+                    exportBtn.addEventListener('click', () => {
+                        this.exportData();
+                    });
+                }
+
+                // Filter toggle button
+                const filterToggleBtn = document.getElementById('filterToggleBtn');
+                if (filterToggleBtn) {
+                    filterToggleBtn.addEventListener('click', () => {
+                        this.toggleFilters();
+                    });
+                }
+
+                // Apply filters button
+                const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+                if (applyFiltersBtn) {
+                    applyFiltersBtn.addEventListener('click', () => {
+                        this.applyFilters();
+                    });
+                }
+
+                // Clear filters button
+                const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+                if (clearFiltersBtn) {
+                    clearFiltersBtn.addEventListener('click', () => {
+                        this.clearFilters();
+                    });
+                }
+
+                // Pagination buttons
+                document.querySelectorAll('.view-page-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const page = parseInt(e.target.dataset.page);
+                        if (page && page !== this.pagination.currentPage) {
+                            this.loadViewData(page, this.filters);
+                        }
+                    });
+                });
+
+                // Data action buttons
+                document.querySelectorAll('.view-data-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.dataset.action;
+                        const rowIndex = parseInt(e.target.dataset.rowIndex);
+                        this.handleDataAction(action, rowIndex);
+                    });
+                });
+
+                // Sortable column headers
+                document.querySelectorAll('.sortable').forEach(header => {
+                    header.addEventListener('click', (e) => {
+                        const field = e.target.dataset.field;
+                        this.handleSort(field);
+                    });
+                });
+            }
+
+            /**
+             * Toggle filters visibility
+             */
+            toggleFilters() {
+                const filtersSection = document.getElementById('filtersSection');
+                if (filtersSection) {
+                    const isVisible = filtersSection.style.display !== 'none';
+                    filtersSection.style.display = isVisible ? 'none' : 'block';
+                }
+            }
+
+            /**
+             * Apply filters
+             */
+            applyFilters() {
+                this.collectFilters();
+                this.loadViewData(1, this.filters);
+            }
+
+            /**
+             * Clear filters
+             */
+            clearFilters() {
+                document.querySelectorAll('[id^="filter_"]').forEach(field => {
+                    field.value = '';
+                });
+                this.filters = {};
+                this.loadViewData(1, this.filters);
+            }
+
+            /**
+             * Collect filter values
+             */
+            collectFilters() {
+                this.filters = {};
+                document.querySelectorAll('[id^="filter_"]').forEach(field => {
+                    if (field.value && field.value.trim()) {
+                        const fieldId = field.id.replace('filter_', '');
+                        this.filters[fieldId] = field.value.trim();
+                    }
+                });
+            }
+
+            /**
+             * Handle data action
+             */
+            handleDataAction(action, rowIndex) {
+                const rowData = this.viewData[rowIndex];
+                if (!rowData) return;
+
+                switch (action) {
+                    case 'view':
+                        this.viewRecord(rowData);
+                        break;
+                    case 'edit':
+                        this.editRecord(rowData);
+                        break;
+                    case 'delete':
+                        this.deleteRecord(rowData);
+                        break;
+                    default:
+                        console.warn('Unknown action:', action);
+                }
+            }
+
+            /**
+             * Handle column sorting
+             */
+            handleSort(field) {
+                if (this.sortConfig.field === field) {
+                    this.sortConfig.direction = this.sortConfig.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sortConfig.field = field;
+                    this.sortConfig.direction = 'asc';
+                }
+
+                // Update sort indicators
+                document.querySelectorAll('.sortable').forEach(header => {
+                    const indicator = header.querySelector('.sort-indicator');
+                    if (indicator) {
+                        if (header.dataset.field === field) {
+                            indicator.textContent = this.sortConfig.direction === 'asc' ? '↑' : '↓';
+                        } else {
+                            indicator.textContent = '↕';
+                        }
+                    }
+                });
+
+                // Apply sorting to local data (for server-side, would need to reload)
+                this.sortLocalData();
+                this.renderDataTable();
+            }
+
+            /**
+             * Sort local data
+             */
+            sortLocalData() {
+                if (!this.sortConfig.field) return;
+
+                this.viewData.sort((a, b) => {
+                    let aVal = a[this.sortConfig.field];
+                    let bVal = b[this.sortConfig.field];
+
+                    // Handle null/undefined values
+                    if (aVal === null || aVal === undefined) aVal = '';
+                    if (bVal === null || bVal === undefined) bVal = '';
+
+                    // Handle different data types
+                    if (typeof aVal === 'string') {
+                        aVal = aVal.toLowerCase();
+                        bVal = bVal.toLowerCase();
+                    } else if (typeof aVal === 'number') {
+                        return this.sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+                    } else if (aVal instanceof Date) {
+                        return this.sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+                    }
+
+                    if (aVal < bVal) return this.sortConfig.direction === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return this.sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            /**
+             * Export data
+             */
+            async exportData() {
+                try {
+                    this.showLoading('جاري تصدير البيانات...');
+                    
+                    const exportConfig = {
+                        format: 'csv',
+                        includeHeaders: true,
+                        filters: this.filters
+                    };
+                    
+                    const response = await new Promise((resolve, reject) => {
+                        google.script.run
+                            .withSuccessHandler(resolve)
+                            .withFailureHandler(reject)
+                            .exportDynamicViewData(this.viewConfig.id, exportConfig, {});
+                    });
+                    
+                    if (response.success && response.file) {
+                        // Download the file
+                        this.downloadFile(response.file);
+                        this.showSuccess('تم تصدير البيانات بنجاح');
+                    } else {
+                        throw new Error(response.error || 'Failed to export data');
+                    }
+                } catch (error) {
+                    console.error('Export error:', error);
+                    this.showError('فشل في تصدير البيانات: ' + error.message);
+                }
+            }
+
+            /**
+             * Download file
+             */
+            downloadFile(fileInfo) {
+                // TODO: Implement file download logic
+                console.log('Download file:', fileInfo);
+            }
+
+            /**
+             * View record (placeholder)
+             */
+            viewRecord(record) {
+                console.log('View record:', record);
+                // TODO: Implement record viewing
+            }
+
+            /**
+             * Edit record (placeholder)
+             */
+            editRecord(record) {
+                console.log('Edit record:', record);
+                // TODO: Implement record editing
+            }
+
+            /**
+             * Delete record (placeholder)
+             */
+            deleteRecord(record) {
+                if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
+                    console.log('Delete record:', record);
+                    // TODO: Implement record deletion
+                }
+            }
+
+            /**
+             * Apply formatter to value
+             */
+            applyFormatter(value, formatter) {
+                if (!formatter) return this.escapeHtml(String(value));
+                
+                // TODO: Implement formatters (date, currency, percentage, etc.)
+                return this.escapeHtml(String(value));
+            }
+
+            /**
+             * Escape HTML to prevent XSS
+             */
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            /**
+             * Show loading state
+             */
+            showLoading(message = 'جاري التحميل...') {
+                this.container.innerHTML = `
+                    <div class="view-loading">
+                        <div class="view-loading-spinner"></div>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+
+            /**
+             * Show error message
+             */
+            showError(message) {
+                const errorHtml = `<div class="view-error">${message}</div>`;
+                const existingError = this.container.querySelector('.view-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                this.container.insertAdjacentHTML('afterbegin', errorHtml);
+            }
+
+            /**
+             * Show success message
+             */
+            showSuccess(message) {
+                const successHtml = `<div class="view-success" style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 15px; margin: 20px; color: #4caf50; text-align: center;">${message}</div>`;
+                const existingSuccess = this.container.querySelector('.view-success');
+                if (existingSuccess) {
+                    existingSuccess.remove();
+                }
+                this.container.insertAdjacentHTML('afterbegin', successHtml);
+                
+                // Auto-remove after 3 seconds
+                setTimeout(() => {
+                    const success = this.container.querySelector('.view-success');
+                    if (success) {
+                        success.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize dynamic view when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get view ID from URL parameters or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('viewId') || 'default_view';
+            
+            const dynamicView = new DynamicView('dynamicViewContainer');
+            dynamicView.initialize(viewId);
+        });
+    </script>
+</body>
+</html>

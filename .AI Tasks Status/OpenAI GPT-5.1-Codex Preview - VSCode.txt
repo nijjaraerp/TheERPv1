@@ -1,0 +1,138 @@
+## Legaend:
+[✔]=> Completed  ▇  [✖]=> Incomplete  ▇  [☬𝕄𝕂✔]=> Approved  ▇  [☬𝕄𝕂✖]=> Changes Required
+Instructions:
+- A seperate file for each AI will be created, named as .AI Tasks Status/{AI_NAME} - {PLATFORM}.txt
+- For any requests made to the AI in the chat window, while creating your ToDO list, you must document the tasks in the respective AI's task status file.
+- Each task list must have a timestamp header with the current date and time in Egyptian timezone.
+- You always have to check your related AI's task status file before creating a new task list to avoid duplication.
+- Each task list must have a title in the format "【 Task List X.Y.Z 】" where X is the major version, Y is the number of trials to complete the task, and Z is the minor version.
+- Each task in the task list must have a version number in the format X.Y.Z (e.g., 1.1.1, 1.1.2, etc.).
+- Each task list must have a checklist section, where tasks are marked as completed with a checkmark (✔) or incomplete with a cross (✖).
+- After each task, there must be a comment section labeled "♆☬𝕄𝕂☬♆ Comment:" for additional notes.
+- Only approved tasks are considered completed.
+- No additional text or explanations should be included outside the specified format.
+- The same process must be repeated for every new task list in the same file.
+- Always check your related AI's task status file before creating a new task list to avoid duplication.
+- Mandatory: Each AI must adhere to its assigned platform file and keep its task lists updated per this format.
+- Platform assignment list:
+[1] VS Code:
+ ==> Anthropic Claude Sonnet 4 
+ ==> Anthropic Claude Sonnet 4.5 
+ ==> Anthropic Claude Haiku 4.5 
+ ==> Google Gemini 2.5 Pro 
+ ==> Google Gemini 3 Pro Preview 
+ ==> OpenAI GPT-5 
+ ==> OpenAI GPT-5-Codex Preview 
+ ==> OpenAI GPT-5.1 Preview 
+ ==> OpenAI GPT-5.1-Codex Preview 
+ ==> OpenAI GPT-5.1-Codex-Mini Preview 
+ ==> xAI Grok Code Fast 1 
+ ==> Raptor mini Preview 
+[2] TARE: 
+ ==> Gemini-2.5-Pro 
+ ==> Kimi-K2-0905 
+ ==> GPT-5-medium Beta 
+ ==> GPT-5-high Beta 
+ ==> GPT-4.1 
+ ==> GPT-4o 
+ ==> 03 Beta 
+ ==> DeepSeek-V3.1 
+ ==> Grok-4 Beta 
+ ==> Gemini-2.5-Flash 
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+====================================================== 
+{Current Date & Time Egyptian: 2024-10-05 02:06:34 AM}
+======================================================
+                                【 Task List 1.1.0  】
+                                ━━━━━━━━━━━━━━━━━━━━━━
+【◆】 CHECKLIST:
+----------------                          
+[ ] 1.1.1 => 
+[ ] 1.1.2 => 
+[ ] 1.1.3 =>
+[ ] 1.1.4 =>
+[ ] 1.1.5 =>
+[ ] 1.1.6 =>
+
+♆☬𝕄𝕂☬♆ Comment:
+━━━━━━━━━━━━━━━━━━
+[ ] 1.1.1 => 
+[ ] 1.1.2 => 
+[ ] 1.1.3 =>
+[ ] 1.1.4 =>
+[ ] 1.1.5 =>
+[ ] 1.1.6 =>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                【 Task List 1.2.0】
+                                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【◆】 CHECKLIST:
+----------------                          
+[ ] 1.2.1 => 
+[ ] 1.2.2 => 
+[ ] 1.2.3 =>
+[ ] 1.2.4 =>
+[ ] 1.2.5 =>
+[ ] 1.2.6 =>
+
+♆☬𝕄𝕂☬♆ Comment:
+━━━━━━━━━━━━━━━━━━
+[ ] 1.2.1 => 
+[ ] 1.2.2 => 
+[ ] 1.2.3 =>
+[ ] 1.2.4 =>
+[ ] 1.2.5 =>
+[ ] 1.2.6 =>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+=================================================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+====================================================== 
+{Current Date & Time Egyptian: 2024-10-05 02:06:34 AM}
+======================================================
+                                【 Task List 2.1.0】
+                                ━━━━━━━━━━━━━━━━━━━━
+【◆】 CHECKLIST:
+----------------                          
+[ ] 2.1.1 => 
+[ ] 2.1.2 => 
+[ ] 2.1.3 =>
+[ ] 2.1.4 =>
+[ ] 2.1.5 =>
+[ ] 2.1.6 =>
+
+♆☬𝕄𝕂☬♆ Comment:
+━━━━━━━━━━━━━━━━━━
+[ ] 2.1.1 => 
+[ ] 2.1.2 => 
+[ ] 2.1.3 =>
+[ ] 2.1.4 =>
+[ ] 2.1.5 =>
+[ ] 2.1.6 =>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+====================================================== 
+{Current Date & Time Egyptian: 2025-11-24 02:15:00 PM}
+======================================================
+                                【 Task List 2.2.0】
+                                ━━━━━━━━━━━━━━━━━━━━
+【◆】 CHECKLIST:
+----------------                          
+[✖] 2.2.1 => التحقق من تطابق لوحة التحكم مع سمة Proto
+[✖] 2.2.2 => استكمال الموارد البصرية الناقصة (أيقونة الطاقة)
+[✖] 2.2.3 => تحديث سجل تعليمات الذكاء الاصطناعي وفق المتطلبات
+[✖] 2.2.4 => تشغيل clasp push --force لمزامنة Apps Script
+[✖] 2.2.5 => تنفيذ git commit ثم push لتأمين المستودع
+[✖] 2.2.6 => مراجعة نهائية وإبلاغ المالك بالحالة
+
+♆☬𝕄𝕂☬♆ Comment:
+━━━━━━━━━━━━━━━━━━
+[✖] 2.2.1 => بانتظار اعتماد المالك
+[✖] 2.2.2 => بانتظار اعتماد المالك
+[✖] 2.2.3 => بانتظار اعتماد المالك
+[✖] 2.2.4 => بانتظار اعتماد المالك
+[✖] 2.2.5 => بانتظار اعتماد المالك
+[✖] 2.2.6 => بانتظار اعتماد المالك
