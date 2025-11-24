@@ -7,6 +7,10 @@
     dock: null,
   };
 
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return;
+  }
+
   function init(options = {}) {
     document.body.classList.add("nijjara-body");
     state.taskSwitcher = document.querySelector("#task-switcher");
