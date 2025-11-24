@@ -121,21 +121,21 @@ Instructions:
                                 ━━━━━━━━━━━━━━━━━━━━
 【◆】 CHECKLIST:
 ----------------                          
-[✖] 2.2.1 => التحقق من تطابق لوحة التحكم مع سمة Proto
-[✖] 2.2.2 => استكمال الموارد البصرية الناقصة (أيقونة الطاقة)
-[✖] 2.2.3 => تحديث سجل تعليمات الذكاء الاصطناعي وفق المتطلبات
-[✖] 2.2.4 => تشغيل clasp push --force لمزامنة Apps Script
-[✖] 2.2.5 => تنفيذ git commit ثم push لتأمين المستودع
-[✖] 2.2.6 => مراجعة نهائية وإبلاغ المالك بالحالة
+[✖] 2.2.1 => Verify dashboard matches Proto theme requirements
+[✖] 2.2.2 => Add missing visual asset (power icon)
+[✖] 2.2.3 => Update AI status log per instructions
+[✖] 2.2.4 => Run clasp push --force to sync Apps Script
+[✖] 2.2.5 => Perform git commit and push to secure repo
+[✖] 2.2.6 => Complete final review and notify owner
 
 ♆☬𝕄𝕂☬♆ Comment:
 ━━━━━━━━━━━━━━━━━━
-[✖] 2.2.1 => بانتظار اعتماد المالك
-[✖] 2.2.2 => بانتظار اعتماد المالك
-[✖] 2.2.3 => بانتظار اعتماد المالك
-[✖] 2.2.4 => بانتظار اعتماد المالك
-[✖] 2.2.5 => بانتظار اعتماد المالك
-[✖] 2.2.6 => بانتظار اعتماد المالك
+[✖] 2.2.1 => Awaiting owner approval
+[✖] 2.2.2 => Awaiting owner approval
+[✖] 2.2.3 => Awaiting owner approval
+[✖] 2.2.4 => Awaiting owner approval
+[✖] 2.2.5 => Awaiting owner approval
+[✖] 2.2.6 => Awaiting owner approval
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -146,18 +146,18 @@ Instructions:
                                 ━━━━━━━━━━━━━━━━━━━━
 【◆】 CHECKLIST:
 ----------------                          
-[✖] 2.3.1 => معالجة خطأ ReferenceError في NijjaraShell
-[✖] 2.3.2 => إضافة حارس لمنع تنفيذ المتصفح أثناء وقت السيرفر
-[✖] 2.3.3 => تحديث سجل تعليمات الذكاء الاصطناعي بالمهام الجديدة
-[✖] 2.3.4 => إعادة نشر المشروع عبر clasp push --force
-[✖] 2.3.5 => مزامنة مستودع GitHub مع التغييرات الحالية
-[✖] 2.3.6 => تأكيد حل المشكلة وإبلاغ المالك
+[✖] 2.3.1 => Resolve NijjaraShell ReferenceError issue
+[✖] 2.3.2 => Add guard to prevent browser-only code on server
+[✖] 2.3.3 => Record new tasks in AI instruction log
+[✖] 2.3.4 => Redeploy project via clasp push --force
+[✖] 2.3.5 => Sync GitHub repository with latest changes
+[✖] 2.3.6 => Confirm fix and update owner
 
 ♆☬𝕄𝕂☬♆ Comment:
 ━━━━━━━━━━━━━━━━━━
-[✖] 2.3.1 => بانتظار اعتماد المالك
-[✖] 2.3.2 => بانتظار اعتماد المالك
-[✖] 2.3.3 => بانتظار اعتماد المالك
-[✖] 2.3.4 => بانتظار اعتماد المالك
-[✖] 2.3.5 => بانتظار اعتماد المالك
-[✖] 2.3.6 => بانتظار اعتماد المالك
+[✖] 2.3.1 => Awaiting owner approval
+[✖] 2.3.2 => Awaiting owner approval
+[✖] 2.3.3 => Awaiting owner approval
+[✖] 2.3.4 => Awaiting owner approval
+[✖] 2.3.5 => Awaiting owner approval
+[✖] 2.3.6 => Awaiting owner approval
