@@ -528,7 +528,22 @@ function validateDynamicEnvironment() {
   }
 }
 
-// Expose functions to HTML interface
-global.initializeDynamicEnvironment = initializeDynamicEnvironment;
-global.getDynamicEnvironmentStatus = getDynamicEnvironmentStatus;
-global.validateDynamicEnvironment = validateDynamicEnvironment;
+// Expose functions to HTML interface when a global-like object exists
+(function () {
+  const root =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof self !== 'undefined'
+      ? self
+      : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+      ? global
+      : null;
+
+  if (root) {
+    root.initializeDynamicEnvironment = initializeDynamicEnvironment;
+    root.getDynamicEnvironmentStatus = getDynamicEnvironmentStatus;
+    root.validateDynamicEnvironment = validateDynamicEnvironment;
+  }
+})();
